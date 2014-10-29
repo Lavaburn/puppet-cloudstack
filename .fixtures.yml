@@ -1,0 +1,11 @@
+# Fixtures file hold the dependencies for spec helper?
+
+fixtures:
+#  forge_modules:
+#    stdlib:
+#      repo: "puppetlabs/stdlib"
+#      ref: "2.6.0"
+#  repositories:
+#    stdlib: "git://github.com/puppetlabs/puppetlabs-stdlib.git"
+  symlinks:
+    lavaburn_cloudstack: "#{source_dir}"
