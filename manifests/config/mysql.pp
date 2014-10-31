@@ -29,5 +29,5 @@ class cloudstack::config::mysql (
   file { "${includedir}/cloudstack.cnf":
     content   => template('cloudstack/cloudstack.cnf.erb'),
     notify    => Service[$mysql::server::server_service_name],
-  } -> Class['mysql::server']
+  }#AUTOMATIC ??? -> Class['mysql::server']
 }

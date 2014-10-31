@@ -84,7 +84,7 @@ class cloudstack::install::cloudstack (
 		            include_src       => false,
 		            key               => 'B7C7765A',
 		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',
-		          } -> Class['apt']
+		          }
 
 		          package { $cloudstack::params::cloudstack_package_name:
 		            ensure => $install_version,
