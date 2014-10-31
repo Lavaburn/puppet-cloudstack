@@ -1,0 +1,45 @@
+# Class: cloudstack::config::cloudstack::mysql
+#
+#
+#
+# Parameters:
+#   * first_time_setup (boolean): See 'cloudstack::config::cloudstack' class
+#   * hostname_nfs (string): See 'cloudstack::config::cloudstack' class
+#   * hostname_db (string): See 'cloudstack::config::cloudstack' class
+#   * server_key (string): See 'cloudstack::config::cloudstack' class
+#   * database_key (string): See 'cloudstack::config::cloudstack' class
+#   * database_username (string): See 'cloudstack::config::cloudstack' class
+#   * database_password (string): See 'cloudstack::config::cloudstack' class
+#
+class cloudstack::config::cloudstack::mysql (
+  # User Configuration
+  $first_time_setup   = $::cloudstack::config::cloudstack::first_time_setup,
+  $hostname_nfs       = $::cloudstack::config::cloudstack::hostname_nfs,
+  $hostname_db        = $::cloudstack::config::cloudstack::hostname_db,
+  $server_key         = $::cloudstack::config::cloudstack::database_db_key,
+  $database_key       = $::cloudstack::config::cloudstack::database_server_key,
+  $database_username  = $::cloudstack::config::cloudstack::database_username,
+  $database_password  = $::cloudstack::config::cloudstack::database_password,
+) {
+  # Validation
+  validate_bool($first_time_setup)
+  validate_string($hostname_nfs, $hostname_db, $server_key, $database_key)
+  validate_string($database_username, $database_password)
+
+  $bin = '/usr/bin/cloudstack-setup-databases'
+  $db = "${database_username}:${database_password}@${hostname_db}"
+  $security = "-m ${server_key} -k ${database_key}"
+  # TODO -i <management_server_ip>
+
+  if ($first_time_setup) {
+    $deploy = '--deploy-as=root'    # TODO MYSQL ROOT PASSWORD ???
+  } else {
+    $deploy = ''
+  }
+
+  exec { 'Setup Cloudstack with MySQL database':
+    command     => "${bin} ${db} ${security} $first_time_setup",
+    subscribe   => Package[$cloudstack::params::cloudstack_package_name], # TODO What happens if not installed from package??
+    refreshonly => true
+  }
+}

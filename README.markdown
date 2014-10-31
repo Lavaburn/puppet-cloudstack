@@ -20,14 +20,25 @@ This module can install and configure Apache Cloudstack
 
 ##Dependencies
 
-This module does not depend on anything.
+CloudStack Infrastructure depends on a working NTP server. 
+This module does *NOT* provide NTP.
+
+This module depends on:
+* puppetlabs/stdlib
+* (OPTIONAL) puppetlabs/apt
+* (OPTIONAL) puppetlabs/mysql
+* (OPTIONAL) maestrodev/wget
+* TODO_NFS 
 
 ##Usage
 
-To begin with the standard configuration, use:
+The default configuration will install a stand-alone management server
+and set up the MySQL Database.
 class 'cloudstack' {
 
 }
+
+TODO - disabling services, different types
 
 ##Reference
 

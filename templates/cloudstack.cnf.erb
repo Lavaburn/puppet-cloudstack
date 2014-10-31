@@ -1,0 +1,7 @@
+[mysqld]
+  innodb_rollback_on_timeout=1
+  innodb_lock_wait_timeout=600
+  max_connections= <%= $max_connections %>
+  log-bin=mysql-bin
+  binlog-format = 'ROW'
+  bind-address = 0.0.0.0

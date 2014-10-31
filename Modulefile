@@ -9,3 +9,7 @@ project_page 'https://bitbucket.org/Lavaburn/lavaburn-cloudstack'
 
 ## Add dependencies, if any:
 # dependency 'username/name', '>= 1.2.0'
+dependency 'puppetlabs/stdlib', ''
+dependency 'puppetlabs/apt', ''
+dependency 'puppetlabs/mysql', ''
+dependency 'maestrodev/wget', ''

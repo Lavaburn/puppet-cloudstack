@@ -1,7 +1,9 @@
 # Required gems
 require 'rubygems'
 require 'bundler/setup'
+require 'hiera'
 
+# Gems: Rake tasks
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
@@ -21,6 +23,9 @@ exclude_paths = [
 
 
 # Puppet Lint config
+	# https://github.com/garethr/puppet-module-skeleton/pull/31
+	Rake::Task[:lint].clear
+ 
 PuppetLint.configuration.relative = true
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.with_context = true
