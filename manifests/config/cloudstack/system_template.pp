@@ -43,8 +43,11 @@ define cloudstack::config::cloudstack::system_template (
   }
 
   exec { "Install System VM template for ${hypervisor}":
-    command   => "${installer_bin} -m ${directory} -u ${template_url}/${image} -h ${hypervisor} -F",
-    subscribe   => Package[$cloudstack::params::cloudstack_package_name], # TODO What happens if not installed from package??
-    refreshonly => true
+    command     => "${installer_bin} -m ${directory} -u ${template_url}/${image} -h ${hypervisor} -F",
+    # TODO [FEATURE-REQUEST: Install from Source?]
+        # What happens if not installed from package??
+    subscribe   => Package[$cloudstack::params::cloudstack_package_name],
+    refreshonly => true,
+    require     => Class['cloudstack::config::cloudstack::mysql'],
   }
 }

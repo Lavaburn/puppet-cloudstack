@@ -32,14 +32,16 @@ class cloudstack::config::cloudstack::mysql (
   # TODO -i <management_server_ip>
 
   if ($first_time_setup) {
-    $deploy = '--deploy-as=root'    # TODO MYSQL ROOT PASSWORD ???
+    $deploy = '--deploy-as=root'
   } else {
     $deploy = ''
   }
 
   exec { 'Setup Cloudstack with MySQL database':
-    command     => "${bin} ${db} ${security} $first_time_setup",
-    subscribe   => Package[$cloudstack::params::cloudstack_package_name], # TODO What happens if not installed from package??
+    command     => "${bin} ${db} ${security} ${deploy}",
+    # TODO [FEATURE-REQUEST: Install from Source?]
+        # What happens if not installed from package??
+    subscribe   => Package[$cloudstack::params::cloudstack_package_name],
     refreshonly => true
   }
 }

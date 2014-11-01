@@ -28,17 +28,26 @@ This module depends on:
 * (OPTIONAL) puppetlabs/apt
 * (OPTIONAL) puppetlabs/mysql
 * (OPTIONAL) maestrodev/wget
-* TODO_NFS 
+* (OPTIONAL) haraldsk/nfs
 
 ##Usage
+
+### Single Server Setup
 
 The default configuration will install a stand-alone management server
 and set up the MySQL Database.
 class 'cloudstack' {
 
 }
+TODO
 
-TODO - disabling services, different types
+### 3 Server Setup
+TODO
+
+
+### Redundancy/HA
+TODO
+
 
 ##Reference
 

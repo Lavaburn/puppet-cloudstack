@@ -76,6 +76,11 @@ class cloudstack::install::cloudstack (
 		            include apt
 		          }
 
+# TODO Was idempotency broken? This keeps repeating...
+# Notice: /Stage[main]/Cloudstack::Install::Cloudstack/Apt::Source[cloudstack]/
+# Apt::Key[Add key: B7C7765A from Apt::Source cloudstack]/
+# Apt_key[Add key: B7C7765A from Apt::Source cloudstack]/ensure: created
+
 		          apt::source { 'cloudstack':
 		            comment           => 'Official Apache repository for Cloudstack',
 		            location          => $cloudstack::params::cloudstack_repository,
@@ -85,10 +90,10 @@ class cloudstack::install::cloudstack (
 		            key               => 'B7C7765A',
 		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',
 		          }
-
+              ->
 		          package { $cloudstack::params::cloudstack_package_name:
 		            ensure => $install_version,
-		          } -> Apt::Source['cloudstack']
+		          }
 
               # Documented bug, fixed in 4.3.1 and 4.4.x
 		          if ($install_version =~ /^4.3.0/) {
@@ -115,6 +120,8 @@ class cloudstack::install::cloudstack (
   if ('xenserver' in $hypervisor_support) {
     include wget
 
+    Package[$cloudstack::params::cloudstack_package_name]
+    ->
 		wget::fetch { 'http://download.cloud.com.s3.amazonaws.com/tools/vhd-util':
 		  destination => "${cloudstack::params::vhd_util_path}/vhd-util",
 		}

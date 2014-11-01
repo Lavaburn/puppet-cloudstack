@@ -29,13 +29,12 @@ describe 'cloudstack' do
 
 	  it { should contain_package('cloudstack-management') }  
 	  
-	  # TODO CHECK WGET!! => FAILING
-	  		# it { should contain_file('/usr/share/cloudstack-common/scripts/vm/hypervisor/xenserver/vhd-util') }
+	  it { should contain_exec('wget-http://download.cloud.com.s3.amazonaws.com/tools/vhd-util') }
 	  
 	  it { should contain_class('mysql::server') }
 	  
-	  it { should contain_file('/etc/mysql/conf.d/cloudstack.cnf') }
-	  		
+	  it { should contain_file('/etc/mysql/conf.d/cloudstack.cnf').with_content(/max_connections=350/) }
+	  	  		
 	  it { should contain_cloudstack__config__cloudstack__system_template('kvm') }	
 	  it { should contain_cloudstack__config__cloudstack__system_template('xenserver') }	
 	  

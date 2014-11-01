@@ -4,29 +4,19 @@
 # (to be run on Hypervisor)
 #
 # Parameters:
-#  TODO
+#  TODO AGENT - PARAMS
 #
 class cloudstack::agent (
-  # TODO
-
   # Installation source flags
   $cloudstack_install_source = 'apache',
 
 	# Versioning
 	$cloudstack_install_version = 'latest',
-
-  # Deployment information ???
-  # TODO CLOUDSTACK IPS (localhost) => HIERA !!
-  # TODO MYSQL IPS (localhost)      => HIERA !!
-  # TODO NFS IPS (localhost)        => HIERA !!
-
 ) {
-  # THIS CAN BE TESTED ON CITRIX XENSERVER TO START OFF
+  include cloudstack::params
 
-  # MANUAL: NTP ?
+  # TODO [COMPATIBILITY: Test on XenServer/Redhat/Debian/...]
 
-  #
-
-  # TODO
+  # TODO AGENT - PACKAGE INSTALL
   #   yum -y install cloudstack-agent
 }
