@@ -30,8 +30,6 @@ class cloudstack::install::cloudstack (
   validate_string($install_version)
   validate_array($hypervisor_support)
 
-  # TODO EXTRACT CODE FOR USE IN AGENT !!!
-
   case $install_source {
     'apache': {
       case $install_version {
@@ -60,14 +58,15 @@ class cloudstack::install::cloudstack (
 
 		  case $::osfamily {
 		    'redhat': {
-		      fail('Redhat support has not yet been implemented/tested.')
+		     $repository = $cloudstack::params::cloudstack_repository
 
-		      # /etc/yum.repos.d/cloudstack.repo
-		      #   [cloudstack]
-		      #   name=cloudstack
-		      #   baseurl=http://cloudstack.apt-get.eu/rhel/4.4/
-		      #   enabled=1
-		      #   gpgcheck=0
+          file { '/etc/yum.repos.d/cloudstack.repo':
+            content => template('cloudstack/cloudstack.repo.erb')
+          }
+          ->
+          package { $cloudstack::params::cloudstack_mgmt_package_name:
+            ensure => $install_version,
+          }
 		    }
         'debian': {
           case $::operatingsystem {
@@ -91,7 +90,7 @@ class cloudstack::install::cloudstack (
 		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',
 		          }
               ->
-		          package { $cloudstack::params::cloudstack_package_name:
+		          package { $cloudstack::params::cloudstack_mgmt_package_name:
 		            ensure => $install_version,
 		          }
 
@@ -120,7 +119,7 @@ class cloudstack::install::cloudstack (
   if ('xenserver' in $hypervisor_support) {
     include wget
 
-    Package[$cloudstack::params::cloudstack_package_name]
+    Package[$cloudstack::params::cloudstack_mgmt_package_name]
     ->
 		wget::fetch { 'http://download.cloud.com.s3.amazonaws.com/tools/vhd-util':
 		  destination => "${cloudstack::params::vhd_util_path}/vhd-util",

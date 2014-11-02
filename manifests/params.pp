@@ -15,11 +15,14 @@ class cloudstack::params {
   $system_template_url = 'http://cloudstack.apt-get.eu/systemvm/4.4'
   $system_template_image_version = '4.4.1-7'
 
+  $cloudstack_mgmt_package_name = 'cloudstack-management'
+  $cloudstack_agent_package_name = 'cloudstack-agent'
+
   case $::osfamily {
     'redhat': {
       $vhd_util_path = '/usr/share/cloudstack-common/scripts/vm/hypervisor/xenserver'
 
-      fail('Redhat support has not yet been implemented.')
+      $cloudstack_repository = 'http://cloudstack.apt-get.eu/rhel/4.4/' #TODO VERIFY - VERSION SPECIFIC
     }
     'debian': {
       $vhd_util_path = '/usr/share/cloudstack-common/scripts/vm/hypervisor/xenserver'
@@ -27,7 +30,6 @@ class cloudstack::params {
       case $::operatingsystem {
         'Ubuntu': {
 		      $cloudstack_repository = 'http://cloudstack.apt-get.eu/ubuntu'
-          $cloudstack_package_name = 'cloudstack-management'
 
 		      case $::lsbdistcodename {
 		        'precise','quantal','raring','saucy': {

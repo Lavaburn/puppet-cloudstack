@@ -5,7 +5,8 @@ describe 'cloudstack' do
   	:osfamily 			=> 'debian',
   	:operatingsystem 	=> 'Ubuntu',
   	:lsbdistid			=> 'Ubuntu',
-  	:lsbdistcodename 	=> 'saucy'
+  	:lsbdistcodename 	=> 'saucy',
+  	:concat_basedir 	=> '/tmp'
   } }
   
   let(:params) { {
