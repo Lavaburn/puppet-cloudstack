@@ -42,7 +42,7 @@ class cloudstack::config::cloudstack::mysql (
     command     => "${bin} ${db} ${security} ${deploy}",
     # TODO [FEATURE-REQUEST: Install from Source?]
         # What happens if not installed from package??
-    subscribe   => Package[$cloudstack::params::cloudstack_package_name],
+    subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
     refreshonly => true
   }
 }

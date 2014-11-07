@@ -43,7 +43,7 @@ class cloudstack::config::cloudstack (
     command     => "/usr/bin/cloudstack-setup-management",
     # TODO [FEATURE-REQUEST: Install from Source?]
         # What happens if not installed from package??
-    subscribe   => Package[$cloudstack::params::cloudstack_package_name],
+    subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
     refreshonly => true
   }
 
@@ -57,13 +57,13 @@ class cloudstack::config::cloudstack (
 
     concat::fragment { 'create-sys-tpl-mount':
 		  target  => $script,
-		  content => 'mkdir -p /mnt/secondary; mount -t nfs <NFS_SERVER>:/nfs/share/secondary /mnt/secondary',#TODO
+		  content => '#!/bin/bash \n mkdir -p /mnt/secondary \n mount -t nfs <NFS_SERVER>:/nfs/share/secondary /mnt/secondary \n',
 		  order   => '10'
 		}
 
 		concat::fragment { 'create-sys-tpl-unmount':
       target  => $script,
-      content => 'umount /mnt/secondary; rm -rf /mnt/secondary',#TODO
+      content => 'umount /mnt/secondary \n rm -rf /mnt/secondary \n',
       order   => '90'
     }
 
@@ -77,7 +77,7 @@ class cloudstack::config::cloudstack (
     Concat[$script] ->
     exec { 'Install System VM templates':
       command     => "/bin/sh ${script}",
-      subscribe   => Package[$cloudstack::params::cloudstack_package_name],
+      subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
       refreshonly => true,
       require     => Class['cloudstack::config::cloudstack::mysql'],
     }

@@ -12,13 +12,11 @@
 define cloudstack::config::cloudstack::system_template (
   $directory      = '/tmp',
   $script         = '/tmp/create-sys-tpl.sh',
-  $major_version  = $cloudstack::config::cloudstack::major_version,
+  $major_version  = $::cloudstack::config::cloudstack::major_version,
 ) {
-  include cloudstack::params
-
-  $installer_bin  = $cloudstack::params::system_template_installer_bin
-  $template_url   = $cloudstack::params::system_template_url[$major_version]
-  $image_version  = $cloudstack::params::system_template_image_version[$major_version]
+  $installer_bin  = $::cloudstack::params::system_template_installer_bin
+  $template_url   = $::cloudstack::params::system_template_url[$major_version]
+  $image_version  = $::cloudstack::params::system_template_image_version[$major_version]
 
   case $title {
     'hyperv': {
@@ -54,7 +52,7 @@ define cloudstack::config::cloudstack::system_template (
 
   concat::fragment { "create-sys-tpl-${hypervisor}":
     target  => $script,
-    content => "${installer_bin} -m ${directory} -u ${template_url}/${image} -h ${hypervisor} -F",
+    content => "${installer_bin} -m ${directory} -u ${template_url}/${image} -h ${hypervisor} -F \n",
     order   => $order,
   }
 }

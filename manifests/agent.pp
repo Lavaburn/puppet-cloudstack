@@ -4,7 +4,10 @@
 # (required by KVM Hypervisor)
 #
 # Parameters:
-#  TODO AGENT - PARAMS
+#  Installation:
+#    * install_source (string): Source to install package from.
+#      Default: 'apache' (Apache-managed APT/YUM repo)
+#    * install_version (string): Version to install. Default = 'latest'
 #
 class cloudstack::agent (
   # Installation source flags
@@ -14,8 +17,6 @@ class cloudstack::agent (
 	$install_version = 'latest',
 ) {
   # TODO [COMPATIBILITY: Test on XenServer/Redhat/Debian/...]
-
-  include cloudstack::params
 
   # Validation
   validate_re($install_source, [ '^apache$' ])
@@ -50,13 +51,13 @@ class cloudstack::agent (
     'apache': {
       case $::osfamily {
         'redhat': {
-          $repository = $cloudstack::params::cloudstack_yum_repository[$cloudstack_major_version]
+          $repository = $::cloudstack::params::cloudstack_yum_repository[$cloudstack_major_version]
 
           file { '/etc/yum.repos.d/cloudstack.repo':
             content => template('cloudstack/cloudstack.repo.erb')
           }
           ->
-          package { $cloudstack::params::cloudstack_agent_package_name:
+          package { $::cloudstack::params::cloudstack_agent_package_name:
             ensure => $install_version,
           }
         }
@@ -69,15 +70,15 @@ class cloudstack::agent (
 
               apt::source { 'cloudstack':
                 comment           => 'Official Apache repository for Cloudstack',
-                location          => $cloudstack::params::cloudstack_apt_repository,
-                release           => $cloudstack::params::cloudstack_apt_release,
-                repos             => $cloudstack::cloudstack_major_version,
+                location          => $::cloudstack::params::cloudstack_apt_repository,
+                release           => $::cloudstack::params::cloudstack_apt_release,
+                repos             => $::cloudstack::cloudstack_major_version,
                 include_src       => false,
                 key               => 'B7C7765A',
                 key_source        => 'http://cloudstack.apt-get.eu/release.asc',
               }
               ->
-              package { $cloudstack::params::cloudstack_agent_package_name:
+              package { $::cloudstack::params::cloudstack_agent_package_name:
                 ensure => $install_version,
               }
             }

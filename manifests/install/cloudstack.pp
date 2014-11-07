@@ -26,8 +26,6 @@ class cloudstack::install::cloudstack (
 
   $major_version      = $::cloudstack::cloudstack_major_version,
 ) {
-  include cloudstack::params
-
   # Validation
   validate_re($install_source, [ '^apache$' ])
   validate_string($install_version)
@@ -37,13 +35,13 @@ class cloudstack::install::cloudstack (
     'apache': {
 		  case $::osfamily {
 		    'redhat': {
-		     $repository = $cloudstack::params::cloudstack_yum_repository[$major_version]
+		     $repository = $::cloudstack::params::cloudstack_yum_repository[$major_version]
 
           file { '/etc/yum.repos.d/cloudstack.repo':
             content => template('cloudstack/cloudstack.repo.erb')
           }
           ->
-          package { $cloudstack::params::cloudstack_mgmt_package_name:
+          package { $::cloudstack::params::cloudstack_mgmt_package_name:
             ensure => $install_version,
           }
 		    }
@@ -61,15 +59,15 @@ class cloudstack::install::cloudstack (
 
 		          apt::source { 'cloudstack':
 		            comment           => 'Official Apache repository for Cloudstack',
-		            location          => $cloudstack::params::cloudstack_apt_repository,
-		            release           => $cloudstack::params::cloudstack_apt_release,
-		            repos             => $cloudstack::cloudstack_major_version,
+		            location          => $::cloudstack::params::cloudstack_apt_repository,
+		            release           => $::cloudstack::params::cloudstack_apt_release,
+		            repos             => $::cloudstack::cloudstack_major_version,
 		            include_src       => false,
 		            key               => 'B7C7765A',
 		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',
 		          }
               ->
-		          package { $cloudstack::params::cloudstack_mgmt_package_name:
+		          package { $::cloudstack::params::cloudstack_mgmt_package_name:
 		            ensure => $install_version,
 		          }
 
@@ -98,7 +96,7 @@ class cloudstack::install::cloudstack (
   if ('xenserver' in $hypervisor_support) {
     include wget
 
-    Package[$cloudstack::params::cloudstack_mgmt_package_name]
+    Package[$::cloudstack::params::cloudstack_mgmt_package_name]
     ->
 		wget::fetch { 'http://download.cloud.com.s3.amazonaws.com/tools/vhd-util':
 		  destination => "${cloudstack::params::vhd_util_path}/vhd-util",
