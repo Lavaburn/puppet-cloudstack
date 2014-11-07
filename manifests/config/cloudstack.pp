@@ -40,7 +40,7 @@ class cloudstack::config::cloudstack (
   }
   ->
   exec { 'Configure Cloudstack':
-    command     => "/usr/bin/cloudstack-setup-management",
+    command     => '/usr/bin/cloudstack-setup-management',
     # TODO [FEATURE-REQUEST: Install from Source?]
         # What happens if not installed from package??
     subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],

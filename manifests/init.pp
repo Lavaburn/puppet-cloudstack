@@ -73,14 +73,15 @@ class cloudstack (
   $create_system_templates        = true,
   $hostname_nfs                   = 'localhost',
   $hostname_db                    = 'localhost',
-  $cloudstack_hypervisor_support  = ['xenserver', 'kvm'], #TODO [TESTPHASE] REPLACE ['hyperv', 'xenserver', 'vmware', 'kvm', 'lxc'],
+  $cloudstack_hypervisor_support  = ['hyperv', 'xenserver', 'vmware', 'kvm', 'lxc'],
     # Required fields. Highly recommended to use hiera-eyaml or similar
-    $database_server_key  = 'secret', # TODO [TESTPHASE] REMOVE !!!
-    $database_db_key      = 'secret', # TODO [TESTPHASE] REMOVE !!!
+    $database_server_key,
+    $database_db_key,
   $database_username    = 'cloudstack',
     # Required fields. Highly recommended to use hiera-eyaml or similar
-    $database_password   = 'kcatsduolc', # TODO [TESTPHASE] REMOVE !!!
-  $management_server_ip  = '127.0.0.1', #TODO [TESTPHASE] REMOVE !!!
+    $database_password,
+  # Required fields. Highly recommended to use hiera or similar
+  $management_server_ip,
 
   # MySQL Deployment
   $mysql_class_override_options   = {},

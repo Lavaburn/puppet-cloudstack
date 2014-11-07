@@ -19,8 +19,8 @@ define cloudstack::config::nfs::export (
     ensure  => 'directory',
   }
 
+  # No spaces !!!
   nfs::server::export { $folder:
-    #clients => '* (rw,insecure,async,no_root_squash) localhost(rw)',
-    clients => ['* (rw,async,no_root_squash,no_subtree_check)'],
+    clients => ['*(rw,async,no_root_squash,no_subtree_check)'],
   }
 }
