@@ -39,8 +39,8 @@ describe 'cloudstack' do
 	  it { should contain_cloudstack__config__cloudstack__system_template('kvm') }	
 	  it { should contain_cloudstack__config__cloudstack__system_template('xenserver') }	
 	  
-	  it { should contain_exec('Install System VM template for kvm') }
-	  it { should contain_exec('Install System VM template for xenserver') }
+	  it { should contain_concat__fragment('create-sys-tpl-kvm') }
+	  it { should contain_exec('Install System VM templates') }
 	  
 	  it { should contain_exec('Setup Cloudstack with MySQL database') }
 	  	  
@@ -59,4 +59,19 @@ describe 'cloudstack' do
 	  it { should contain_class('cloudstack::install::nfs') }
 	  it { should contain_class('cloudstack::install::mysql') }	  
   end
+  
+  context "redhat_no_nfs" do
+	  let(:facts) { {
+	  	:osfamily 			=> 'redhat',
+	  	:operatingsystem 	=> 'CentOS',
+	  	:concat_basedir 	=> '/tmp'
+	  } }
+	  
+	  let(:params) { {
+	  	:nfs_server		=> false,			# TODO TEST WITH NFS ENABLED -> BUG in NFS Module ?
+	  } }
+	  
+	  it { should contain_package('cloudstack-management') }  
+	  
+  end  
 end

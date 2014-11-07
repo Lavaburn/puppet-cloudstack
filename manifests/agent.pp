@@ -1,7 +1,7 @@
 # Class: cloudstack::agent
 #
 # This module installs Apache CloudStack Agent
-# (to be run on Hypervisor)
+# (required by KVM Hypervisor)
 #
 # Parameters:
 #  TODO AGENT - PARAMS
@@ -14,7 +14,6 @@ class cloudstack::agent (
 	$install_version = 'latest',
 ) {
   # TODO [COMPATIBILITY: Test on XenServer/Redhat/Debian/...]
-  # TODO AGENT - PACKAGE INSTALL => cloudstack-agent
 
   include cloudstack::params
 
@@ -22,35 +21,36 @@ class cloudstack::agent (
   validate_re($install_source, [ '^apache$' ])
   validate_string($install_version)
 
+  # Cloudstack Version
+  case $install_version {
+    'latest': {
+      $cloudstack_major_version = '4.4'
+    }
+    '/^4.0/': {
+      $cloudstack_major_version = '4.0'
+    }
+    '/^4.1/': {
+      $cloudstack_major_version = '4.1'
+    }
+    '/^4.2/': {
+      $cloudstack_major_version = '4.2'
+    }
+    '/^4.3/': {
+      $cloudstack_major_version = '4.3'
+    }
+    '/^4.4/': {
+      $cloudstack_major_version = '4.4'
+    }
+    default: {
+      fail('Currently only supports versions 4.0.x - 4.4.x')
+    }
+  }
+
   case $install_source {
     'apache': {
-      case $install_version {
-        'latest': {
-          $real_repo_version = '4.4'
-        }
-        '/^4.0/': {
-          $real_repo_version = '4.0'
-        }
-        '/^4.1/': {
-          $real_repo_version = '4.1'
-        }
-        '/^4.2/': {
-          $real_repo_version = '4.2'
-        }
-        '/^4.3/': {
-          $real_repo_version = '4.3'
-        }
-        '/^4.4/': {
-          $real_repo_version = '4.4'
-        }
-        default: {
-          fail('Apache apt repository only supports versions 4.0.x - 4.4.x')
-        }
-      }
-
       case $::osfamily {
         'redhat': {
-          $repository = $cloudstack::params::cloudstack_repository
+          $repository = $cloudstack::params::cloudstack_yum_repository[$cloudstack_major_version]
 
           file { '/etc/yum.repos.d/cloudstack.repo':
             content => template('cloudstack/cloudstack.repo.erb')
@@ -69,9 +69,9 @@ class cloudstack::agent (
 
               apt::source { 'cloudstack':
                 comment           => 'Official Apache repository for Cloudstack',
-                location          => $cloudstack::params::cloudstack_repository,
+                location          => $cloudstack::params::cloudstack_apt_repository,
                 release           => $cloudstack::params::cloudstack_apt_release,
-                repos             => $real_repo_version,
+                repos             => $cloudstack::cloudstack_major_version,
                 include_src       => false,
                 key               => 'B7C7765A',
                 key_source        => 'http://cloudstack.apt-get.eu/release.asc',
@@ -95,4 +95,22 @@ class cloudstack::agent (
       fail('Only Apache apt repo is supported. Use install_source = "apache"')
     }
   }
+
+  # TODO - EDIT /etc/libvirt/libvirtd.conf
+  #  listen_tls = 0
+  #  listen_tcp = 1
+  #  tcp_port = "16059"
+  #  auth_tcp = "none"
+  #  mdns_adv = 0
+
+  # TODO - CENTOS - /etc/sysconfig/libvirtd
+  # LIBVIRTD_ARGS="--listen"
+  # => service libvirtd restart
+
+  # TODO - UBUNTU - /etc/default/libvirt-bin
+  # libvirtd_opts="-d -l"
+  # => service libvirt-bin restart
+
+
+
 }

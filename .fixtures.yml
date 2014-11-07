@@ -14,9 +14,6 @@ fixtures:
     wget:
       repo: "maestrodev/wget"
       ref: "1.5.6"      
-    nfs:
-      repo: "haraldsk/nfs"    #TODO FROM GIT !!!
-      ref: "1.1.1"
     concat:
       repo: "puppetlabs/concat"
       ref: "1.1.2"

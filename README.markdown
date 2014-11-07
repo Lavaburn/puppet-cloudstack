@@ -25,10 +25,11 @@ This module does *NOT* provide NTP.
 
 This module depends on:
 * puppetlabs/stdlib
-* (OPTIONAL) puppetlabs/apt
-* (OPTIONAL) puppetlabs/mysql
-* (OPTIONAL) maestrodev/wget
-* (OPTIONAL) haraldsk/nfs
+* (OPTIONAL - TODO) puppetlabs/apt
+* (OPTIONAL - TODO) puppetlabs/mysql
+* (OPTIONAL - TODO) maestrodev/wget
+* (OPTIONAL - TODO) haraldsk/nfs
+* (OPTIONAL - TODO) puppetlabs/concat
 
 ##Usage
 

@@ -13,6 +13,8 @@
 #   * database_db_key (string): See 'cloudstack' class
 #   * database_username (string): See 'cloudstack' class
 #   * database_password (string): See 'cloudstack' class
+#   * management_server_ip (string): See 'cloudstack' class
+#   * major_version (string): Cloudstack Version (4.0 - 4.4)
 #
 class cloudstack::config::cloudstack (
   $first_time_setup         = $::cloudstack::first_time_setup,
@@ -24,6 +26,9 @@ class cloudstack::config::cloudstack (
   $database_db_key          = $::cloudstack::database_db_key,
   $database_username        = $::cloudstack::database_username,
   $database_password        = $::cloudstack::database_password,
+  $management_server_ip     = $::cloudstack::management_server_ip,
+
+  $major_version            = $::cloudstack::cloudstack_major_version,
 ) {
   # Validation
   validate_bool($first_time_setup, $create_system_templates)
@@ -43,22 +48,38 @@ class cloudstack::config::cloudstack (
   }
 
   if ($first_time_setup and $create_system_templates) {
-    file { '/mnt/secondary':
-      ensure => 'directory',
-    } ->
+    # TODO find more permanent path
+    $script = '/tmp/create-sys-tpl.sh'
 
-    # TODO NFS MOUNT
-    # BEFORE: Mount
-    #  mkdir -p /mnt/secondary
-    #  mount -t nfs <NFS_SERVER>:/nfs/share/secondary /mnt/secondary
+    concat { $script:
+		  ensure => present,
+		}
 
-    # TODO LOAD TEST MySQL ->  ERROR 1040 (08004): Too many connections
-    cloudstack::config::cloudstack::system_template { $hypervisor_support:
-      directory => '/mnt/secondary',
+    concat::fragment { 'create-sys-tpl-mount':
+		  target  => $script,
+		  content => 'mkdir -p /mnt/secondary; mount -t nfs <NFS_SERVER>:/nfs/share/secondary /mnt/secondary',#TODO
+		  order   => '10'
+		}
+
+		concat::fragment { 'create-sys-tpl-unmount':
+      target  => $script,
+      content => 'umount /mnt/secondary; rm -rf /mnt/secondary',#TODO
+      order   => '90'
     }
 
-    # AFTER
-    #  umount /mnt/secondary
-    #  rm -rf /mnt/secondary
+    cloudstack::config::cloudstack::system_template { $hypervisor_support:
+      directory       => '/mnt/secondary',
+      script          => $script,
+      major_version   => $major_version,
+    }
+
+    # TODO LOAD TEST MySQL ->  ERROR 1040 (08004): Too many connections
+    Concat[$script] ->
+    exec { 'Install System VM templates':
+      command     => "/bin/sh ${script}",
+      subscribe   => Package[$cloudstack::params::cloudstack_package_name],
+      refreshonly => true,
+      require     => Class['cloudstack::config::cloudstack::mysql'],
+    }
   }
 }

@@ -13,6 +13,7 @@
 #   * install_source (string): See 'cloudstack' class
 #   * install_version (string): See 'cloudstack' class
 #   * hypervisor_support (array): See 'cloudstack' class
+#   * major_version (string): Cloudstack Version (4.0 - 4.4)
 #
 class cloudstack::install::cloudstack (
   # Comptibility Flags
@@ -22,6 +23,8 @@ class cloudstack::install::cloudstack (
   $install_source     = $::cloudstack::cloudstack_install_source,
   $install_version    = $::cloudstack::cloudstack_install_version,
   $hypervisor_support = $::cloudstack::cloudstack_hypervisor_support,
+
+  $major_version      = $::cloudstack::cloudstack_major_version,
 ) {
   include cloudstack::params
 
@@ -32,33 +35,9 @@ class cloudstack::install::cloudstack (
 
   case $install_source {
     'apache': {
-      case $install_version {
-        'latest': {
-          $real_repo_version = '4.4'
-        }
-        '/^4.0/': {
-          $real_repo_version = '4.0'
-        }
-        '/^4.1/': {
-          $real_repo_version = '4.1'
-        }
-        '/^4.2/': {
-          $real_repo_version = '4.2'
-        }
-        '/^4.3/': {
-          $real_repo_version = '4.3'
-        }
-        '/^4.4/': {
-          $real_repo_version = '4.4'
-        }
-        default: {
-          fail('Apache apt repository only supports versions 4.0.x - 4.4.x')
-        }
-      }
-
 		  case $::osfamily {
 		    'redhat': {
-		     $repository = $cloudstack::params::cloudstack_repository
+		     $repository = $cloudstack::params::cloudstack_yum_repository[$major_version]
 
           file { '/etc/yum.repos.d/cloudstack.repo':
             content => template('cloudstack/cloudstack.repo.erb')
@@ -82,9 +61,9 @@ class cloudstack::install::cloudstack (
 
 		          apt::source { 'cloudstack':
 		            comment           => 'Official Apache repository for Cloudstack',
-		            location          => $cloudstack::params::cloudstack_repository,
+		            location          => $cloudstack::params::cloudstack_apt_repository,
 		            release           => $cloudstack::params::cloudstack_apt_release,
-		            repos             => $real_repo_version,
+		            repos             => $cloudstack::cloudstack_major_version,
 		            include_src       => false,
 		            key               => 'B7C7765A',
 		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',

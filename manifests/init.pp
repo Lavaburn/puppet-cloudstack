@@ -36,6 +36,8 @@
 #     Default = 'cloudstack'
 #   * database_password (string): Password for MySQL Database.
 #     (REQUIRED - Recommended through Hiera-eyaml)
+#   * management_server_ip (string): IP address of the Management Server
+#     (REQUIRED - Recommended through Hiera)
 #   * mysql_class_override_options (hash): Overrides the MySQL default config.
 #     Default: {}
 #   * cloudstack_server_count (number): Number of Cloudstack servers
@@ -78,6 +80,7 @@ class cloudstack (
   $database_username    = 'cloudstack',
     # Required fields. Highly recommended to use hiera-eyaml or similar
     $database_password   = 'kcatsduolc', # TODO [TESTPHASE] REMOVE !!!
+  $management_server_ip  = '127.0.0.1', #TODO [TESTPHASE] REMOVE !!!
 
   # MySQL Deployment
   $mysql_class_override_options   = {},
@@ -89,6 +92,31 @@ class cloudstack (
   # Validation
   validate_bool($cloudstack_server, $nfs_server, $mysql_server)
   validate_bool($cloudstack_install, $nfs_install, $mysql_install)
+
+  # Cloudstack Version
+  case $cloudstack_install_version {
+    'latest': {
+      $cloudstack_major_version = '4.4'
+    }
+    '/^4.0/': {
+      $cloudstack_major_version = '4.0'
+    }
+    '/^4.1/': {
+      $cloudstack_major_version = '4.1'
+    }
+    '/^4.2/': {
+      $cloudstack_major_version = '4.2'
+    }
+    '/^4.3/': {
+      $cloudstack_major_version = '4.3'
+    }
+    '/^4.4/': {
+      $cloudstack_major_version = '4.4'
+    }
+    default: {
+      fail('Currently only supports versions 4.0.x - 4.4.x')
+    }
+  }
 
   # Include and define dependencies
   class { 'cloudstack::install': } ->
