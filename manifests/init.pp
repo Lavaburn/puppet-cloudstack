@@ -89,6 +89,9 @@ class cloudstack (
   # NFS Deployment
   $nfs_exports  = ['secondary'],
 ) {
+  #Initialise common params
+  include cloudstack::params
+
   # Validation
   validate_bool($cloudstack_server, $nfs_server, $mysql_server)
   validate_bool($cloudstack_install, $nfs_install, $mysql_install)

@@ -16,6 +16,9 @@ class cloudstack::agent (
 	# Versioning
 	$install_version = 'latest',
 ) {
+  #Initialise common params
+  include cloudstack::params
+
   # TODO [COMPATIBILITY: Test on XenServer/Redhat/Debian/...]
 
   # Validation

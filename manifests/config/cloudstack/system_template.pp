@@ -52,7 +52,7 @@ define cloudstack::config::cloudstack::system_template (
 
   concat::fragment { "create-sys-tpl-${hypervisor}":
     target  => $script,
-    content => "${installer_bin} -m ${directory} -u ${template_url}/${image} -h ${hypervisor} -F \n",
+    content => template('cloudstack/system_template/create.erb'),
     order   => $order,
   }
 }

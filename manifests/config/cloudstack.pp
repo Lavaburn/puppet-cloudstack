@@ -51,19 +51,21 @@ class cloudstack::config::cloudstack (
     # TODO find more permanent path
     $script = '/tmp/create-sys-tpl.sh'
 
+    $mount_dir = '/mnt/secondary'
+
     concat { $script:
 		  ensure => present,
 		}
 
     concat::fragment { 'create-sys-tpl-mount':
 		  target  => $script,
-		  content => '#!/bin/bash \n mkdir -p /mnt/secondary \n mount -t nfs <NFS_SERVER>:/nfs/share/secondary /mnt/secondary \n',
+		  content => template('cloudstack/system_template/mount.erb'),
 		  order   => '10'
 		}
 
 		concat::fragment { 'create-sys-tpl-unmount':
       target  => $script,
-      content => 'umount /mnt/secondary \n rm -rf /mnt/secondary \n',
+      content => template('cloudstack/system_template/unmount.erb'),
       order   => '90'
     }
 
