@@ -39,17 +39,18 @@ class cloudstack::config::cloudstack (
 
   }
   ->
+
+  # TODO [FEATURE-REQUEST: Install from Source?]
+  # => Can't depend on Package['cloudstack-management']
+
   exec { 'Configure Cloudstack':
     command     => '/usr/bin/cloudstack-setup-management',
-    # TODO [FEATURE-REQUEST: Install from Source?]
-        # What happens if not installed from package??
     subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
     refreshonly => true
   }
 
   if ($first_time_setup and $create_system_templates) {
-    # TODO find more permanent path
-    $script = '/tmp/create-sys-tpl.sh'
+    $script = '/usr/share/cloudstack-common/scripts/installer/create-sys-tpl.sh'
 
     $mount_dir = '/mnt/secondary'
 
@@ -75,12 +76,15 @@ class cloudstack::config::cloudstack (
       major_version   => $major_version,
     }
 
-    # TODO LOAD TEST MySQL ->  ERROR 1040 (08004): Too many connections
+    # TODO [FEATURE-REQUEST: Install from Source?]
+    # => Can't depend on Package['cloudstack-management']
+
     Concat[$script] ->
     exec { 'Install System VM templates':
       command     => "/bin/sh ${script}",
       subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
       refreshonly => true,
+      timeout     => 3600,
       require     => Class['cloudstack::config::cloudstack::mysql'],
     }
   }

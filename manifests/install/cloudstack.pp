@@ -52,19 +52,14 @@ class cloudstack::install::cloudstack (
 		            include apt
 		          }
 
-# TODO Was idempotency broken? This keeps repeating...
-# Notice: /Stage[main]/Cloudstack::Install::Cloudstack/Apt::Source[cloudstack]/
-# Apt::Key[Add key: B7C7765A from Apt::Source cloudstack]/
-# Apt_key[Add key: B7C7765A from Apt::Source cloudstack]/ensure: created
-
 		          apt::source { 'cloudstack':
 		            comment           => 'Official Apache repository for Cloudstack',
 		            location          => $::cloudstack::params::cloudstack_apt_repository,
 		            release           => $::cloudstack::params::cloudstack_apt_release,
 		            repos             => $::cloudstack::cloudstack_major_version,
 		            include_src       => false,
-		            key               => 'B7C7765A',
-		            key_source        => 'http://cloudstack.apt-get.eu/release.asc',
+		            key               => '86C278E3',
+		            key_server        => 'keyserver.ubuntu.com',
 		          }
               ->
 		          package { $::cloudstack::params::cloudstack_mgmt_package_name:

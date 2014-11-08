@@ -57,9 +57,8 @@ Here, list the classes, types, providers, facts, etc contained in your module.
 ##Compatibility
 
 This module has been tested with:
-- Puppet x.x
-- Ruby x.x
-- Ubuntu x.x
+- Puppet 3.7.3 - Ruby 1.9.3 - Ubuntu 14.04.1
+- Puppet 3.7.3 - Ruby 1.8.7 - CentOS 6.3
 
 ##Testing
 

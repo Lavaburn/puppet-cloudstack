@@ -38,10 +38,11 @@ class cloudstack::config::cloudstack::mysql (
     $deploy = ''
   }
 
+  # TODO [FEATURE-REQUEST: Install from Source?]
+  # => Can't depend on Package['cloudstack-management']
+
   exec { 'Setup Cloudstack with MySQL database':
     command     => "${bin} ${db} ${security} ${deploy}",
-    # TODO [FEATURE-REQUEST: Install from Source?]
-        # What happens if not installed from package??
     subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
     refreshonly => true
   }

@@ -1,0 +1,54 @@
+HOSTS:
+  ubuntu-14-04:
+    #roles:
+    #  - master/agent/dashboard/database
+    platform: ubuntu-14.04-x64
+    box: puppetlabs/ubuntu-14.04-64-puppet
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-puppet
+    hypervisor: vagrant
+    #ip: 192.168.100.1
+
+    #puppetlabs/ubuntu-12.04-32-nocm                 -   Ubuntu 12.04 (precise) 32-bit (i386), no configuration management software
+    #puppetlabs/ubuntu-12.04-64-nocm                 -   Ubuntu 12.04 (precise) 64-bit (amd64/x86_64), no configuration management software
+    #puppetlabs/ubuntu-12.04-32-puppet               -   Ubuntu 12.04 (precise) 32-bit (i386), Puppet 3.7.1
+    #puppetlabs/ubuntu-12.04-64-puppet               -   Ubuntu 12.04 (precise) 64-bit (amd64/x86_64), Puppet 3.7.1
+
+    #puppetlabs/ubuntu-13.10-32-nocm                  -   A standard Ubuntu 13.10 box with no preinstalled configuration management software        
+    #puppetlabs/ubuntu-13.10-64-nocm                  -   A standard Ubuntu 13.10 box with no preinstalled configuration management software      
+    #puppetlabs/ubuntu-13.10-32-puppet                -   A standard Ubuntu 13.10 box with Puppet 3.4.3 preinstalled
+    #puppetlabs/ubuntu-13.10-64-puppet                -   A standard Ubuntu 13.10 box with Puppet 3.4.3 preinstalled
+  
+    #puppetlabs/ubuntu-14.04-32-nocm                  -   Ubuntu 14.04 (trusty) 32-bit (i386), no configuration management software    
+    #puppetlabs/ubuntu-14.04-64-nocm                  -   Ubuntu 14.04 (trusty) 64-bit (amd64/x86_64), no configuration management software    
+    #puppetlabs/ubuntu-14.04-32-puppet                -   Ubuntu 14.04 (trusty) 32-bit (i386), Puppet 3.7.1
+    #puppetlabs/ubuntu-14.04-64-puppet                -   Ubuntu 14.04 (trusty) 64-bit (amd64/x86_64), Puppet 3.7.1
+
+
+    #puppetlabs/debian-6.0.9-32-nocm                   -   A standard Debian 6.0.9 (squeeze) box with no preinstalled configuration management software    
+    #puppetlabs/debian-6.0.9-64-nocm                   -   A standard Debian 6.0.9 (squeeze) box with no preinstalled configuration management software        
+    #puppetlabs/debian-6.0.9-32-puppet                 -   A standard Debian 6.0.9 (squeeze) box with Puppet 3.6.2 preinstalled        
+    #puppetlabs/debian-6.0.9-64-puppet                 -   A standard Debian 6.0.9 (squeeze) box with Puppet 3.6.2 preinstalled
+
+    #puppetlabs/debian-7.6-32-nocm                     -   Debian 7.6 (wheezy) 32-bit (i386), no configuration management software
+    #puppetlabs/debian-7.6-64-nocm                     -   Debian 7.6 (wheezy) 64-bit (amd64/x86_64), no configuration management software
+    #puppetlabs/debian-7.6-32-puppet                   -   Debian 7.6 (wheezy) 32-bit (i386), Puppet 3.7.1
+    #puppetlabs/debian-7.6-64-puppet                   -   Debian 7.6 (wheezy) 64-bit (amd64/x86_64), Puppet 3.7.1
+
+
+    #puppetlabs/centos-5.11-32-nocm                     -  CentOS 5.11 32-bit (i386), no configuration management software
+    #puppetlabs/centos-5.11-64-nocm                     -  CentOS 5.11 64-bit (amd64/x86_64), no configuration management software
+    #puppetlabs/centos-5.11-32-puppet                   -  CentOS 5.11 32-bit (i386), Puppet 3.7.1
+    #puppetlabs/centos-5.11-64-puppet                   -  CentOS 5.11 64-bit (amd64/x86_64), Puppet 3.7.1
+
+    #puppetlabs/centos-6.5-32-nocm                     -   CentOS 6.5 32-bit (i386), no configuration management software
+    #puppetlabs/centos-6.5-64-nocm                     -   CentOS 6.5 64-bit (amd64/x86_64), no configuration management software
+    #puppetlabs/centos-6.5-32-puppet                   -   CentOS 6.5 32-bit (i386), Puppet 3.7.1    
+    #puppetlabs/centos-6.5-64-puppet                   -   CentOS 6.5 64-bit (amd64/x86_64), Puppet 3.7.1
+
+    #puppetlabs/centos-7.0-64-nocm                     -   CentOS 7.0 64-bit (amd64/x86_64), no configuration management software        
+    #puppetlabs/centos-7.0-64-puppet                   -   CentOS 7.0 64-bit (amd64/x86_64), Puppet 3.7.2
+
+CONFIG:
+  #type: foss
+  #nfs_server: none
+  #consoleport: 443

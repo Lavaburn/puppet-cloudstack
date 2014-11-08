@@ -19,8 +19,6 @@ class cloudstack::agent (
   #Initialise common params
   include cloudstack::params
 
-  # TODO [COMPATIBILITY: Test on XenServer/Redhat/Debian/...]
-
   # Validation
   validate_re($install_source, [ '^apache$' ])
   validate_string($install_version)
@@ -75,10 +73,10 @@ class cloudstack::agent (
                 comment           => 'Official Apache repository for Cloudstack',
                 location          => $::cloudstack::params::cloudstack_apt_repository,
                 release           => $::cloudstack::params::cloudstack_apt_release,
-                repos             => $::cloudstack::cloudstack_major_version,
+                repos             => $cloudstack_major_version,
                 include_src       => false,
-                key               => 'B7C7765A',
-                key_source        => 'http://cloudstack.apt-get.eu/release.asc',
+                key               => '86C278E3',
+                key_server        => 'keyserver.ubuntu.com',
               }
               ->
               package { $::cloudstack::params::cloudstack_agent_package_name:

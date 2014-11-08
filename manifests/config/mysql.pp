@@ -17,11 +17,11 @@ class cloudstack::config::mysql (
   $max_connections = $cloudstack_server_count * 350
 
   # TODO [FEATURE-REQUEST: Configure without Puppet mysql::server module]
-  # TODO [COMPATIBILITY: Test on Redhat/Debian/...]
+  # => Can't depend on Service['mysqld']
 
   $includedir = '/etc/mysql/conf.d'
   file { "${includedir}/cloudstack.cnf":
     content   => template('cloudstack/cloudstack.cnf.erb'),
-    notify    => Service[$mysql::server::server_service_name],
+    notify    => Service['mysqld'],
   }
 }

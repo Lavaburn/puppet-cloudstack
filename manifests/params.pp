@@ -30,7 +30,7 @@ class cloudstack::params {
   case $::osfamily {
     'redhat': {
       $vhd_util_path = '/usr/share/cloudstack-common/scripts/vm/hypervisor/xenserver'
-      $system_template_installer_bin = '/usr/lib64/cloud/common/scripts/storage/secondary/cloud-install-sys-tmplt'
+      $system_template_installer_bin = '/usr/share/cloudstack-common/scripts/storage/secondary/cloud-install-sys-tmplt'
 
       $cloudstack_yum_repository = {
         '4.0' => 'http://cloudstack.apt-get.eu/rhel/4.0/',
