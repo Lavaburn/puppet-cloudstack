@@ -19,23 +19,22 @@ end
 # Directories that don't need to be checked (Lint/Syntax)
 exclude_paths = [
 	"spec/**/*",
+  "examples/**/*",
 ]
 
 
-# Puppet Lint config
-	# https://github.com/garethr/puppet-module-skeleton/pull/31
-	Rake::Task[:lint].clear # TODO - THIS REMOVE THE LINT CHECK !!!
- 
+# Puppet Lint config 
 PuppetLint.configuration.relative = true
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.with_context = true
-#PuppetLint.configuration.fix = true
 
 PuppetLint.configuration.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
 
-#config.disable_checks = ['80chars', 'class_parameter_defaults', 'class_inherits_from_params_class']
+PuppetLint.configuration.send("disable_80chars") 
+PuppetLint.configuration.send("class_inherits_from_params_class") 
+           # 'class_parameter_defaults', ''
 
-PuppetLint.configuration.ignore_paths = exclude_paths
+PuppetLint.configuration.ignore_paths = exclude_paths # TODO - Does not work !!
 PuppetSyntax.exclude_paths = exclude_paths
 
 
@@ -48,7 +47,7 @@ end
 desc "Run syntax, lint, and spec tests."
 task :test => [
 	:syntax,
-	:lint,
+# TODO - Disabled due to issue - 	:lint,
 	:metadata,
 	:spec,
 ]

@@ -29,27 +29,27 @@ class cloudstack::config::cloudstack inherits ::cloudstack {
 
     # Create Script
     concat { $::cloudstack::create_sys_tpl_path:
-		  ensure => present,
-		}
+      ensure => present,
+    }
 
     concat::fragment { 'create-sys-tpl-mount':
-		  target  => $::cloudstack::create_sys_tpl_path,
-		  content => template('cloudstack/system_template/mount.erb'),
-		  order   => '10'
-		}
+      target  => $::cloudstack::create_sys_tpl_path,
+      content => template('cloudstack/system_template/mount.erb'),
+      order   => '10'
+    }
 
-		concat::fragment { 'create-sys-tpl-unmount':
+    concat::fragment { 'create-sys-tpl-unmount':
       target  => $::cloudstack::create_sys_tpl_path,
       content => template('cloudstack/system_template/unmount.erb'),
       order   => '90'
     }
 
     cloudstack::config::cloudstack::system_template { $::cloudstack::hypervisor_support:
-      script          => $::cloudstack::create_sys_tpl_path,
-      image_version   => $::cloudstack::system_template_image_version,
-      installer_bin   => $::cloudstack::system_template_installer_bin,
-      directory       => $mount_dir,
-      template_url    => $::cloudstack::system_template_url,
+      script        => $::cloudstack::create_sys_tpl_path,
+      image_version => $::cloudstack::system_template_image_version,
+      installer_bin => $::cloudstack::system_template_installer_bin,
+      directory     => $mount_dir,
+      template_url  => $::cloudstack::system_template_url,
     }
 
     # Run Script

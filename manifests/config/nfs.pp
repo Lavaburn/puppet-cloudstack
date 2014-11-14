@@ -12,10 +12,10 @@ class cloudstack::config::nfs inherits ::cloudstack {
 
   # Manage root dir
   if ($::cloudstack::nfs_manage_dir) {
-	  file { $::cloudstack::nfs_root_dir:
-	    ensure  => 'directory',
-	  }
-	}
+    file { $::cloudstack::nfs_root_dir:
+      ensure  => 'directory',
+    }
+  }
 
   cloudstack::config::nfs::export { $::cloudstack::nfs_exports:
     root_dir  => $::cloudstack::nfs_root_dir,

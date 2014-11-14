@@ -51,8 +51,8 @@ class cloudstack (
 
   # Cloudstack installation flags
   $cloudstack_install               = true,
-	$cloudstack_install_version       = 'latest',
-	$cloudstack_mgmt_package_name     = $cloudstack::params::cloudstack_mgmt_package_name,
+  $cloudstack_install_version       = 'latest',
+  $cloudstack_mgmt_package_name     = $cloudstack::params::cloudstack_mgmt_package_name,
   $cloudstack_yum_repository        = undef,
   $cloudstack_apt_repository        = undef,
   $cloudstack_apt_release           = $cloudstack::params::cloudstack_apt_release,

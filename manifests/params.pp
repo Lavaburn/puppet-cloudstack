@@ -34,12 +34,12 @@ class cloudstack::params {
     'precise','quantal','raring','saucy': {
       $cloudstack_apt_release = 'precise'
     }
-	  'trusty','utopic','vivid': {
-	    $cloudstack_apt_release = 'trusty'
-	  }
-	  default: {
-	    warning("Unsupported version of Ubuntu: ${::lsbdistcodename}")
-	  }
+    'trusty','utopic','vivid': {
+      $cloudstack_apt_release = 'trusty'
+    }
+    default: {
+      warning("Unsupported version of Ubuntu: ${::lsbdistcodename}")
+    }
   }
 
   $vhd_util_url   = 'http://download.cloud.com.s3.amazonaws.com/tools/vhd-util'
@@ -65,54 +65,57 @@ class cloudstack::params {
       'debian': {
         $mysql_confd_dir = '/etc/mysql/conf.d'
       }
+      default: {
+        warning("Unsupported osfamily: ${::osfamily}")
+      }
     }
   } else {
-	  case $::osfamily {
-	    'redhat': {
-			  case $::operatingsystem {
-				  'Fedora': {
-					  if is_integer($::operatingsystemrelease) and $::operatingsystemrelease >= 19 or $::operatingsystemrelease == 'Rawhide' {
-						  $provider = 'mariadb'
-						} else {
-							$provider = 'mysql'
-						}
-					}
-					/^(RedHat|CentOS|Scientific|OracleLinux)$/: {
-						if $::operatingsystemmajrelease >= 7 {
-							$provider = 'mariadb'
-						} else {
-							$provider = 'mysql'
-						}
-					}
-					default: {
-					  $provider = 'mysql'
-					}
-				}
+    case $::osfamily {
+      'redhat': {
+        case $::operatingsystem {
+          'Fedora': {
+            if is_integer($::operatingsystemrelease) and $::operatingsystemrelease >= 19 or $::operatingsystemrelease == 'Rawhide' {
+              $provider = 'mariadb'
+            } else {
+              $provider = 'mysql'
+            }
+          }
+          /^(RedHat|CentOS|Scientific|OracleLinux)$/: {
+            if $::operatingsystemmajrelease >= 7 {
+              $provider = 'mariadb'
+            } else {
+              $provider = 'mysql'
+            }
+          }
+          default: {
+            $provider = 'mysql'
+          }
+        }
 
-				if $provider == 'mariadb' {
-					$mysql_service_name = 'mariadb'
-				} else {
-					$mysql_service_name = 'mysqld'
-				}
-				$mysql_confd_dir = '/etc/my.cnf.d'
-	    }
-	    'debian': {
-	      $mysql_service_name = 'mysql'
-	      $mysql_confd_dir = '/etc/mysql/conf.d'
+        if $provider == 'mariadb' {
+          $mysql_service_name = 'mariadb'
+        } else {
+          $mysql_service_name = 'mysqld'
+        }
+        $mysql_confd_dir = '/etc/my.cnf.d'
+      }
+      'debian': {
+        $mysql_service_name = 'mysql'
+        $mysql_confd_dir = '/etc/mysql/conf.d'
 
-	      case $::operatingsystem {
-	        'Ubuntu': {
+        case $::operatingsystem {
+          'Ubuntu': {
 
-			    }
-			    default: {
-			      warning("Unsupported operatingsystem: ${::operatingsystem}")
-			    }
-	      }
-	    }
-			default: {
-			  warning("Unsupported osfamily: ${::osfamily}")
-			}
-		}
+          }
+          default: {
+            warning("Unsupported operatingsystem: ${::operatingsystem}")
+          }
+        }
+      }
+      default: {
+        # Styling requires a default case - warning already set earlier
+      }
+    }
   }
 
   # $cloudstack_agent_package_name = 'cloudstack-agent'

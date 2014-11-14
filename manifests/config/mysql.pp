@@ -17,7 +17,7 @@ class cloudstack::config::mysql inherits ::cloudstack {
 
   # Configuration file
   file { "${::cloudstack::mysql_confd_dir}/cloudstack.cnf":
-    content   => template('cloudstack/cloudstack.cnf.erb'),
-    notify    => Service[$::cloudstack::mysql_service_name],
+    content => template('cloudstack/cloudstack.cnf.erb'),
+    notify  => Service[$::cloudstack::mysql_service_name],
   }
 }
