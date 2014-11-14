@@ -1,7 +1,9 @@
 HOSTS:
   ubuntu-14-04:
-    #roles:
-    #  - master/agent/dashboard/database
+    roles:
+      - master
+      - agent
+      # dashboard/database
     platform: ubuntu-14.04-x64
     box: puppetlabs/ubuntu-14.04-64-puppet
     box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-puppet
@@ -49,6 +51,6 @@ HOSTS:
     #puppetlabs/centos-7.0-64-puppet                   -   CentOS 7.0 64-bit (amd64/x86_64), Puppet 3.7.2
 
 CONFIG:
-  #type: foss
+  type: foss
   #nfs_server: none
   #consoleport: 443

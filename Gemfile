@@ -5,7 +5,7 @@ group :test do
 	gem "puppet", ENV['PUPPET_VERSION'] || '~> 3.7.0'
 #	gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
 	gem "rspec-puppet"
-	gem "puppetlabs_spec_helper"
+	gem "puppetlabs_spec_helper", :git => 'https://github.com/puppetlabs/puppetlabs_spec_helper.git'
 end
 
 group :development do
@@ -13,6 +13,7 @@ group :development do
 	gem "travis-lint"
 	gem "beaker"
 	gem "beaker-rspec"
+	gem "beaker-librarian"
 	gem "vagrant-wrapper"
 	gem "puppet-blacksmith"
 #	gem "guard-rake"

@@ -1,1 +1,17 @@
-{}
+{
+  "name": "lavaburn-cloudstack",
+  "version": "0.2.0",
+  "author": "Nicolas Truyens",
+  "license": "Apache License 2.0",
+  "project_page": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack",
+  "summary": "Puppet module for managing Apache Cloudstack",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib"},
+    {"name":"puppetlabs/apt"},
+    {"name":"puppetlabs/mysql"},
+    {"name":"puppetlabs/wget"},
+    {"name":"puppetlabs/concat"},
+    {"name":"haraldsk/nfs"}
+  ],
+  "source": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack"
+}

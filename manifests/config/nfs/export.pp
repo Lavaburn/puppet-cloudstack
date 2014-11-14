@@ -1,16 +1,23 @@
 # Definition: cloudstack::config::nfs::export
 #
-#
+# NFS folder export
 #
 # Parameters:
-#   * root_dir (string): Path of parent directory. Default = /exports
+#   * [title] (string): The foldername to export
+#   * root_dir (absolute path): Path of parent directory.
+#
+# Example:
+# cloudstack::config::nfs::export { 'export1':
+#   root_dir => '/exports',
+# }
+# => This will export /exports/export1
 #
 define cloudstack::config::nfs::export (
-  # User Configuration
-  $root_dir = '/exports',
+  $root_dir,
 ) {
   # Validation
-  validate_string($root_dir)
+  validate_absolute_path($root_dir)
+  validate_string($title)
 
   $folder = "${root_dir}/${title}"
 
@@ -20,10 +27,10 @@ define cloudstack::config::nfs::export (
   }
 
   # TODO [FEATURE-REQUEST: Configure without Puppet haraldsk/nfs module]
-  # Don't use nfs::server::export
+  # Don't use nfs::server::export ???
 
   # No spaces !!!
-  nfs::server::export { $folder:
+  File[$folder] -> nfs::server::export { $folder:
     clients => ['*(rw,async,no_root_squash,no_subtree_check)'],
   }
 }

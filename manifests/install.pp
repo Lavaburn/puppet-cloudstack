@@ -1,22 +1,14 @@
-# Private Class: cloudstack::install
+# Class: cloudstack::install
+#
+# This is a private class. Only use the 'cloudstack' class.
 #
 # Handes the installation part.
-# It is not recommended to use this class direct
-# Use the "cloudstack" class instead or the individual install classes:
-# * cloudstack::install::cloudstack
-# * cloudstack::install::nfs
-# * cloudstack::install::mysql
 #
-class cloudstack::install {
+class cloudstack::install inherits ::cloudstack {
+  validate_bool($::cloudstack::cloudstack_server, $::cloudstack::nfs_server, $::cloudstack::mysql_server)
+  validate_bool($::cloudstack::cloudstack_install)
+
   if ($::cloudstack::cloudstack_server and $::cloudstack::cloudstack_install) {
-    class { 'cloudstack::install::cloudstack': }
-  }
-
-  if ($::cloudstack::nfs_server and $::cloudstack::nfs_install) {
-    class { 'cloudstack::install::nfs': }
-  }
-
-  if ($::cloudstack::mysql_server and $::cloudstack::mysql_install) {
-    class { 'cloudstack::install::mysql': }
+    contain 'cloudstack::install::cloudstack'
   }
 }

@@ -1,4 +1,17 @@
 ## 2014-10-29 Release 0.1.0
 ### Summary:
+ Initial Module. Contains 3 install classes and 3 config classes
+### Features:
+ - Install/Config MySQL
+ - Install/Config NFS
+ - Install/Config Cloudstack
+
+## 2014-11-13 Release 0.2.0
+### Summary:
+  Removed most dependencies. Included examples and instructions to use the class.
 
 ### Features:
+ - Config MySQL
+ - Config NFS (?)
+ - Install/Config Cloudstack
+ 

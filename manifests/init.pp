@@ -4,98 +4,99 @@
 # It can install the management server, mysql database and NFS server.
 #
 # Parameters:
-#  Installation:
-#    The following parameters are valid for these "modules":
-#    'cloudstack', 'nfs', 'mysql'
-#    * <module>_server (boolean): Whether to install/configure this part.
-#      Default = true
-#    * <module>_install (boolean): Whether to install this part. Default = true
-#    * <module>_install_source (string): Source to install package from.
-#      * Cloudstack: 'apache' (Apache-managed APT/YUM repo). Default: 'apache'
-#      * NFS: 'puppet' (??? Puppet Module). Default: 'puppet'
-#      * MySQL: 'puppet' (puppetlabs/mysql Puppet module). Default: 'puppet'
-#    * <module>_install_version (string): Version to install. Default = 'latest'
-#
-#  Configuration:
-#   * first_time_setup (boolean): Whether to initialise the MySQL Database.
-#     (Only runs on cloudstack management server). Default = true
-#   * create_system_templates (boolean): Whether to add system VM templates
-#     to the secondary storage (NFS). (Also see cloudstack_hypervisor_support)
-#     (Only runs on cloudstack management server). Default = true
+#   * cloudstack_server (boolean): Whether to install/configure CloudStack. Default = true
+#   * nfs_server (boolean): Whether to install/configure NFS (see README). Default = true
+#   * mysql_server (boolean): Whether to install/configure MySQL (see README). Default = true
+#   * cloudstack_install (boolean): Whether to install CloudStack. Default = true
+#   * cloudstack_install_version (string): CloudStack version to install. Default = 'latest'
+#   * cloudstack_mgmt_package_name (string): See Params
+#   * cloudstack_yum_repository (string): See Params
+#   * cloudstack_apt_repository (string): See Params
+#   * cloudstack_apt_release (string): See Params
+#   * cloudstack_apt_key    Default = '86C278E3'
+#   * cloudstack_apt_keyserver    Default = 'keyserver.ubuntu.com'
+#   * vhd_util_url (string): See Params
+#   * vhd_util_path (string): See Params
+#   * cloudstack_master (boolean): Whether server is the first server installed to use this DB. Default = true
+#   * hostname_cloudstack (string): Hostname/IP of Cloudstack Management Server. Default = 'localhost' # TODO ???
+#   * hostname_database (string): Hostname/IP of (Master) MySQL Server. Default = 'localhost'
 #   * hostname_nfs (string): Hostname/IP of NFS server. Default = 'localhost'
-#   * hostname_db (string): Hostname/IP of (Master) MySQL Server.
-#     Default = 'localhost'
-#   * cloudstack_hypervisor_support (array):
-#       This array defines which templates to install on first install.
-#       Default: ['hyper-v', 'xenserver', 'vsphere', 'kvm', 'lxc'],
-#   * database_server_key (string): Key to protect properties file secrets.
-#     (REQUIRED - Recommended through Hiera-eyaml)
-#   * database_db_key (string): Key to protect database secrets.
-#     (REQUIRED - Recommended through Hiera-eyaml)
-#   * database_username (string): Username for MySQL Database.
-#     Default = 'cloudstack'
-#   * database_password (string): Password for MySQL Database.
-#     (REQUIRED - Recommended through Hiera-eyaml)
-#   * management_server_ip (string): IP address of the Management Server
-#     (REQUIRED - Recommended through Hiera)
-#   * mysql_class_override_options (hash): Overrides the MySQL default config.
-#     Default: {}
-#   * cloudstack_server_count (number): Number of Cloudstack servers
-#     to be managed (MySQL setting)
-#   * nfs_exports (array): This array lists all the NFS export targets
-#     The targets will be sub-folders of /exports. Default = ['secondary']
+#   * database_username (string): Username for MySQL Database. Default = 'cloudstack'
+#   * database_password (string): Password for MySQL Database. REQUIRED (*)
+#   * database_server_key (string): Key to protect properties file secrets. REQUIRED (*)
+#   * database_database_key (string): Key to protect database secrets. REQUIRED (*)
+#   * create_sys_tpl_path (string): See Params
+#   * nfs_secondary_storage_mount_dir (string): See Params
+#   * hypervisor_support (array): Defines which templates to install on first install.
+#     Default: ['hyperv', 'xenserver', 'vmware', 'kvm', 'lxc']
+#   * system_template_image_version (string): See Params
+#   * system_template_installer_bin (string): See Params
+#   * system_template_url (string): See Params
+#   * cloudstack_server_count (number): Number of Cloudstack servers to be managed (MySQL setting). Default = 1
+#   * mysql_confd_dir (string): See Params
+#   * mysql_service_name (string): See Params
+#   * nfs_manage_dir (boolean): Whether to manage the parent directory of NFS exports. Default = true
+#   * nfs_root_dir (string): Parent directory of NFS exports. Default = '/exports'
+#   * nfs_exports (array): Defines all the NFS export targets. Default = ['secondary']
 #
-# Requires: see Modulefile
+# (*) It is highly recommended to put secret keys in Hiera-eyaml and use automatic parameter lookup
+# [https://github.com/TomPoulton/hiera-eyaml]
+# [https://docs.puppetlabs.com/hiera/1/puppet.html#automatic-parameter-lookup]
 #
 class cloudstack (
-  # Flags to set deployment scenario
-  $cloudstack_server = true,
-  $nfs_server        = true,
-  $mysql_server      = true,
+  # Flags to set the deployment scenario
+  $cloudstack_server                = true,
+  $nfs_server                       = true,
+  $mysql_server                     = true,
 
-  # Installation flags
-  $cloudstack_install = true,
-  $nfs_install        = true,
-  $mysql_install      = true,
-
-  # Installation source flags
-  $cloudstack_install_source = 'apache',
-  $nfs_install_source        = 'puppet',
-  $mysql_install_source      = 'puppet',
-
-	# Versioning
-	$cloudstack_install_version = 'latest',
-  $nfs_install_version        = 'latest',
-  $mysql_install_version      = 'latest',
+  # Cloudstack installation flags
+  $cloudstack_install               = true,
+	$cloudstack_install_version       = 'latest',
+	$cloudstack_mgmt_package_name     = $cloudstack::params::cloudstack_mgmt_package_name,
+  $cloudstack_yum_repository        = undef,
+  $cloudstack_apt_repository        = undef,
+  $cloudstack_apt_release           = $cloudstack::params::cloudstack_apt_release,
+  $cloudstack_apt_key               = '86C278E3',
+  $cloudstack_apt_keyserver         = 'keyserver.ubuntu.com',
+  $vhd_util_url                     = $cloudstack::params::vhd_util_url,
+  $vhd_util_path                    = $cloudstack::params::vhd_util_path,
 
   # CloudStack Deployment
-  $first_time_setup               = true,
-  $create_system_templates        = true,
-  $hostname_nfs                   = 'localhost',
-  $hostname_db                    = 'localhost',
-  $cloudstack_hypervisor_support  = ['hyperv', 'xenserver', 'vmware', 'kvm', 'lxc'],
-    # Required fields. Highly recommended to use hiera-eyaml or similar
-    $database_server_key,
-    $database_db_key,
-  $database_username    = 'cloudstack',
-    # Required fields. Highly recommended to use hiera-eyaml or similar
-    $database_password,
-  # Required fields. Highly recommended to use hiera or similar
-  $management_server_ip,
+  $cloudstack_master                = true,
+
+  $hostname_cloudstack              = 'localhost',
+  $hostname_database                = 'localhost',
+  $hostname_nfs                     = 'localhost',
+
+  $database_username                = 'cloudstack',
+  $database_password,
+  $database_server_key,
+  $database_database_key,
+
+  $create_sys_tpl_path              = $cloudstack::params::create_sys_tpl_path,
+  $nfs_secondary_storage_mount_dir  = $cloudstack::params::nfs_secondary_storage_mount_dir,
+  $hypervisor_support               = ['hyperv', 'xenserver', 'vmware', 'kvm', 'lxc'],
+
+  $system_template_image_version    = $cloudstack::params::system_template_image_version,
+  $system_template_installer_bin    = $cloudstack::params::system_template_installer_bin,
+  $system_template_url              = $cloudstack::params::system_template_url,
 
   # MySQL Deployment
-  $mysql_class_override_options   = {},
-  $cloudstack_server_count        = 1,
+  $cloudstack_server_count          = 1,
+  $mysql_confd_dir                  = $cloudstack::params::mysql_confd_dir,
+  $mysql_service_name               = $cloudstack::params::mysql_service_name,
 
   # NFS Deployment
-  $nfs_exports  = ['secondary'],
-) {
-  #Initialise common params
-  include cloudstack::params
+  $nfs_manage_dir                   = true,
+  $nfs_root_dir                     = '/exports',
+  $nfs_exports                      = ['secondary'],
 
+
+  # TODO ? Cloudstack Agent
+  #  $cloudstack_agent_package_name  = $cloudstack::params::cloudstack_agent_package_name,
+) inherits cloudstack::params {
   # Validation
-  validate_bool($cloudstack_server, $nfs_server, $mysql_server)
-  validate_bool($cloudstack_install, $nfs_install, $mysql_install)
+  validate_string($cloudstack_install_version)
 
   # Cloudstack Version
   case $cloudstack_install_version {
@@ -122,8 +123,26 @@ class cloudstack (
     }
   }
 
+  if $cloudstack_yum_repository != undef {
+    validate_string($cloudstack_yum_repository)
+
+    $real_cloudstack_yum_repository = $cloudstack_yum_repository
+  } else {
+    $real_cloudstack_yum_repository = $cloudstack::params::cloudstack_yum_repository_hash[$cloudstack_major_version]
+  }
+
+  if $cloudstack_apt_repository != undef {
+    validate_string($cloudstack_apt_repository)
+
+    $real_cloudstack_apt_repository = $cloudstack_apt_repository
+  } else {
+    $real_cloudstack_apt_repository = $cloudstack::params::cloudstack_apt_repository
+  }
+
+
   # Include and define dependencies
-  class { 'cloudstack::install': } ->
-  class { 'cloudstack::config': } ->
-  Class['cloudstack']
+  contain 'cloudstack::install'
+  contain 'cloudstack::config'
+
+  Class['cloudstack::install'] -> Class['cloudstack::config']
 }

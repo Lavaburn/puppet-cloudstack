@@ -24,7 +24,7 @@ exclude_paths = [
 
 # Puppet Lint config
 	# https://github.com/garethr/puppet-module-skeleton/pull/31
-	Rake::Task[:lint].clear
+	Rake::Task[:lint].clear # TODO - THIS REMOVE THE LINT CHECK !!!
  
 PuppetLint.configuration.relative = true
 PuppetLint.configuration.fail_on_warnings = true
@@ -49,5 +49,6 @@ desc "Run syntax, lint, and spec tests."
 task :test => [
 	:syntax,
 	:lint,
+	:metadata,
 	:spec,
 ]

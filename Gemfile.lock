@@ -1,3 +1,16 @@
+GIT
+  remote: https://github.com/puppetlabs/puppetlabs_spec_helper.git
+  revision: fce5a24b9df02da3819fc0ac5a882369fe165413
+  specs:
+    puppetlabs_spec_helper (0.8.2)
+      metadata-json-lint
+      mocha
+      puppet-lint
+      puppet-syntax
+      rake
+      rspec
+      rspec-puppet
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -28,6 +41,9 @@ GEM
       nokogiri (~> 1.5.10)
       rbvmomi (= 1.8.1)
       unf (~> 0.1)
+    beaker-librarian (0.0.1)
+      beaker
+      beaker-rspec
     beaker-rspec (3.0.0)
       beaker (~> 1.10)
       rspec
@@ -108,6 +124,7 @@ GEM
     launchy (2.4.2)
       addressable (~> 2.3)
     metaclass (0.0.4)
+    metadata-json-lint (0.0.2)
     method_source (0.8.2)
     mime-types (1.25.1)
     minitar (0.5.4)
@@ -136,13 +153,6 @@ GEM
     puppet-lint (1.1.0)
     puppet-syntax (1.3.0)
       rake
-    puppetlabs_spec_helper (0.8.2)
-      mocha
-      puppet-lint
-      puppet-syntax
-      rake
-      rspec
-      rspec-puppet
     pusher-client (0.6.0)
       json
       websocket (~> 1.0)
@@ -210,10 +220,11 @@ PLATFORMS
 
 DEPENDENCIES
   beaker
+  beaker-librarian
   beaker-rspec
   puppet (~> 3.7.0)
   puppet-blacksmith
-  puppetlabs_spec_helper
+  puppetlabs_spec_helper!
   rake
   rspec-puppet
   travis

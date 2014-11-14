@@ -1,4 +1,4 @@
-# Fixtures file hold the dependencies for spec helper?
+# Fixtures file hold the dependencies for spec helper
 
 fixtures:
   forge_modules:
@@ -20,8 +20,8 @@ fixtures:
       
   repositories:
     nfs: 
-      repo: "https://github.com/haraldsk/puppet-module-nfs.git"
-      branch: "v.2.0.x"
+      repo: "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git"
+      branch: "fix_debian_service_cycle_squashed"
 
   symlinks:
     cloudstack: "#{source_dir}"

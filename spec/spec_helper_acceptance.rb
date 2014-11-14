@@ -1,12 +1,9 @@
 require 'beaker-rspec'
+require 'beaker/librarian'
 require 'pry'
 
 hosts.each do |host|
-  # install_puppet #=> helper (beaker-rspec ?)
-  
-  # install_package host, 'rubygems'
-  # on host, 'gem install puppet --no-ri --no-rdoc'
-  # on host, "mkdir -p #{host['distmoduledir']}"
+  # Using box with pre-installed Puppet !
 end
 
 RSpec.configure do |c|
@@ -17,12 +14,31 @@ RSpec.configure do |c|
   	c.formatter = :documentation
 
 	# Configure all nodes in nodeset
-  	c.before :suite do
-		# Install modules
-		# puppet_module_install(:source => proj_root, :module_name => 'mysql')
-
+  	c.before :suite do		
+		# Broken on Ubuntu 14.04 !!! (rubygems => ruby)
+			# install_librarian       
+			
 		hosts.each do |host|
-      		# on host, puppet('module','install','puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
+			# Librarian Puppet
+			install_package host, 'ruby1.9.1-dev'
+			install_package host, 'ruby'
+			install_package host, 'git'
+			on host, 'gem install librarian-puppet'
     	end
+			
+		# Hiera
+		files = [ 'hiera.yaml', 'hiera' ]
+		files.each do |file|
+		  scp_to master, File.expand_path(File.join(File.dirname(__FILE__), '../spec/fixtures', file)), "/etc/puppet/#{file}"
+		end
+    	
+    	# Librarian Puppet
+    	librarian_install_modules(proj_root, 'cloudstack')
+    	
+		# Install modules
+		puppet_module_install(:source => proj_root, :module_name => 'cloudstack')
   end
 end
+
+
+

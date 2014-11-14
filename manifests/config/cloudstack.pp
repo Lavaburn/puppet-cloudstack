@@ -1,91 +1,67 @@
 # Class: cloudstack::config::cloudstack
 #
+# This is a private class. Only use the 'cloudstack' class.
+#
 # Configures CloudStack Instance
 #
-# Parameters:
-#  Normal configuration (taken over from cloudstack class)
-#   * first_time_setup (boolean): See 'cloudstack' class
-#   * create_system_templates (boolean): See 'cloudstack' class
-#   * hostname_nfs (boolean): See 'cloudstack' class
-#   * hostname_db (boolean): See 'cloudstack' class
-#   * hypervisor_support (array): See 'cloudstack' class
-#   * database_server_key (string): See 'cloudstack' class
-#   * database_db_key (string): See 'cloudstack' class
-#   * database_username (string): See 'cloudstack' class
-#   * database_password (string): See 'cloudstack' class
-#   * management_server_ip (string): See 'cloudstack' class
-#   * major_version (string): Cloudstack Version (4.0 - 4.4)
-#
-class cloudstack::config::cloudstack (
-  $first_time_setup         = $::cloudstack::first_time_setup,
-  $create_system_templates  = $::cloudstack::create_system_templates,
-  $hostname_nfs             = $::cloudstack::hostname_nfs,
-  $hostname_db              = $::cloudstack::hostname_db,
-  $hypervisor_support       = $::cloudstack::cloudstack_hypervisor_support,
-  $database_server_key      = $::cloudstack::database_server_key,
-  $database_db_key          = $::cloudstack::database_db_key,
-  $database_username        = $::cloudstack::database_username,
-  $database_password        = $::cloudstack::database_password,
-  $management_server_ip     = $::cloudstack::management_server_ip,
-
-  $major_version            = $::cloudstack::cloudstack_major_version,
-) {
+class cloudstack::config::cloudstack inherits ::cloudstack {
   # Validation
-  validate_bool($first_time_setup, $create_system_templates)
-  validate_array($hypervisor_support)
+  validate_string($::cloudstack::cloudstack_mgmt_package_name)
+  validate_string($::cloudstack::hostname_nfs)
+  validate_absolute_path($::cloudstack::create_sys_tpl_path, $::cloudstack::nfs_secondary_storage_mount_dir)
+  validate_array($::cloudstack::hypervisor_support)
 
-  # Set-up Cloudstack with MySQL
-  class { 'cloudstack::config::cloudstack::mysql':
+  # Set-up Cloudstack database (MySQL)
+  contain cloudstack::config::cloudstack::mysql
 
-  }
-  ->
-
-  # TODO [FEATURE-REQUEST: Install from Source?]
-  # => Can't depend on Package['cloudstack-management']
-
+  # Set-up Cloudstack
+  Class['cloudstack::config::cloudstack::mysql'] ->
   exec { 'Configure Cloudstack':
     command     => '/usr/bin/cloudstack-setup-management',
-    subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
-    refreshonly => true
+    subscribe   => Package[$::cloudstack::cloudstack_mgmt_package_name],
+    refreshonly => true,
   }
 
-  if ($first_time_setup and $create_system_templates) {
-    $script = '/usr/share/cloudstack-common/scripts/installer/create-sys-tpl.sh'
+  if ($::cloudstack::cloudstack_master) {
+    # Template Data
+    $mount_dir    = $::cloudstack::nfs_secondary_storage_mount_dir
+    $hostname_nfs = $::cloudstack::hostname_nfs
 
-    $mount_dir = '/mnt/secondary'
-
-    concat { $script:
+    # Create Script
+    concat { $::cloudstack::create_sys_tpl_path:
 		  ensure => present,
 		}
 
     concat::fragment { 'create-sys-tpl-mount':
-		  target  => $script,
+		  target  => $::cloudstack::create_sys_tpl_path,
 		  content => template('cloudstack/system_template/mount.erb'),
 		  order   => '10'
 		}
 
 		concat::fragment { 'create-sys-tpl-unmount':
-      target  => $script,
+      target  => $::cloudstack::create_sys_tpl_path,
       content => template('cloudstack/system_template/unmount.erb'),
       order   => '90'
     }
 
-    cloudstack::config::cloudstack::system_template { $hypervisor_support:
-      directory       => '/mnt/secondary',
-      script          => $script,
-      major_version   => $major_version,
+    cloudstack::config::cloudstack::system_template { $::cloudstack::hypervisor_support:
+      script          => $::cloudstack::create_sys_tpl_path,
+      image_version   => $::cloudstack::system_template_image_version,
+      installer_bin   => $::cloudstack::system_template_installer_bin,
+      directory       => $mount_dir,
+      template_url    => $::cloudstack::system_template_url,
     }
 
-    # TODO [FEATURE-REQUEST: Install from Source?]
-    # => Can't depend on Package['cloudstack-management']
-
-    Concat[$script] ->
+    # Run Script
+    Exec['Configure Cloudstack']
+    ->
+    Concat[$::cloudstack::create_sys_tpl_path]
+    ->
     exec { 'Install System VM templates':
-      command     => "/bin/sh ${script}",
-      subscribe   => Package[$::cloudstack::params::cloudstack_mgmt_package_name],
+      command     => "/bin/sh ${::cloudstack::create_sys_tpl_path}",
+      subscribe   => Package[$::cloudstack::cloudstack_mgmt_package_name],
       refreshonly => true,
       timeout     => 3600,
-      require     => Class['cloudstack::config::cloudstack::mysql'],
     }
   }
 }

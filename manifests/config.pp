@@ -1,24 +1,29 @@
-# Private Class: cloudstack::config
+# Class: cloudstack::config
+#
+# This is a private class. Only use the 'cloudstack' class.
 #
 # Handes the configuration part.
-# It is not recommended to use this class direct
-# Use the "cloudstack" class instead or the individual config classes:
-# * cloudstack::config::cloudstack
-# * cloudstack::config::nfs
-# * cloudstack::config::mysql
 #
-class cloudstack::config {
-  anchor {'dependencies': }
+class cloudstack::config inherits ::cloudstack {
+  validate_bool($::cloudstack::cloudstack_server, $::cloudstack::nfs_server, $::cloudstack::mysql_server)
 
-  if ($::cloudstack::cloudstack_server) {
-     Anchor['dependencies'] -> class { 'cloudstack::config::cloudstack': }
-  }
+  anchor { 'cloudstack-config-dependencies': }
 
   if ($::cloudstack::nfs_server) {
-    class { 'cloudstack::config::nfs': } -> Anchor['dependencies']
+    contain 'cloudstack::config::nfs'
+
+    Class['cloudstack::config::nfs'] -> Anchor['cloudstack-config-dependencies']
   }
 
   if ($::cloudstack::mysql_server) {
-    class { 'cloudstack::config::mysql': } -> Anchor['dependencies']
+    contain 'cloudstack::config::mysql'
+
+    Class['cloudstack::config::mysql'] -> Anchor['cloudstack-config-dependencies']
+  }
+
+  if ($::cloudstack::cloudstack_server) {
+    contain 'cloudstack::config::cloudstack'
+
+    Anchor['cloudstack-config-dependencies']-> Class['cloudstack::config::cloudstack']
   }
 }
