@@ -84,8 +84,8 @@ class example::profile {
 
 
   # Class Dependencies/Sequence
-  Class['mysql::server'] -> Class['cloudstack']
+  # DEPENDENCY CYCLE - Class['mysql::server'] -> Class['cloudstack']
   Class['nfs::server'] -> Class['cloudstack']
-  Class['apt'] -> Class['cloudstack']
+  # DEPENDENCY CYCLE - Class['apt'] -> Class['cloudstack']
   Class['wget'] -> Class['cloudstack']
 }
