@@ -9,7 +9,7 @@ class cloudstack::usage inherits ::cloudstack {
   package { 'cloudstack-usage':
     ensure => 'installed',
   }
-
+  ->
   service { 'cloudstack-usage':
     ensure => 'running',
   }
