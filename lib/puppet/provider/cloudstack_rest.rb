@@ -153,7 +153,7 @@ class Puppet::Provider::Rest < Puppet::Provider
         if jobResult["jobstatus"] == 2 && jobResult["jobresulttype"] == "text"
           raise "[ERROR #{jobResult["jobresultcode"]}] "+jobResult["jobresult"]
         else
-          raise "Async Job Status Query did not return a valid result."
+          raise "Async Job Status Query did not return a valid result: "+jobResult.inspect
         end
       end
     end

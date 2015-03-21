@@ -11,6 +11,13 @@ GIT
       rspec
       rspec-puppet
 
+GIT
+  remote: https://github.com/rodjek/rspec-puppet.git
+  revision: 6ac97993fa972a15851a73d55fe3d1c0a85172b5
+  specs:
+    rspec-puppet (1.0.1)
+      rspec
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -152,8 +159,6 @@ GEM
       rspec-core (>= 2.99.0.beta1)
       rspec-expectations (>= 2.99.0.beta1)
     rspec-mocks (2.99.2)
-    rspec-puppet (1.0.1)
-      rspec
     serverspec (1.16.0)
       highline
       net-ssh
@@ -185,5 +190,5 @@ DEPENDENCIES
   puppet-blacksmith
   puppetlabs_spec_helper!
   rake
-  rspec-puppet
+  rspec-puppet!
   vagrant-wrapper

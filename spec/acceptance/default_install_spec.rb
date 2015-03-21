@@ -8,7 +8,7 @@ describe 'cloudstack class' do
             class { '::nfs::server': }
             class { '::wget': }
             class { '::apt': }
-        		class { 'cloudstack': }
+        		class { 'cloudstack': }      		
       		EOS
 
       		# Run it twice and test for idempotency

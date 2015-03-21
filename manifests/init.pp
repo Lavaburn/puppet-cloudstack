@@ -139,6 +139,11 @@ class cloudstack (
     $real_cloudstack_apt_repository = $cloudstack::params::cloudstack_apt_repository
   }
 
+  #TODO: BUGFIX - Features are not installed (Custom Type/Provider)
+    # sudo gem install rest_client
+    # sudo apt-get install ruby-dev
+    # sudo gem install json
+
 
   # Include and define dependencies
   contain 'cloudstack::install'

@@ -85,16 +85,28 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
   def open_firewall    
     ip = getIpAddress(resource[:name])    
       
-    ['tcp', 'udp', 'icmp'].each { |protocol|
+    ['tcp', 'udp'].each { |protocol|
       Puppet.debug "Creating firewall rule to allow all #{protocol} traffic to "+resource[:name]
       
       params = { 
         :ipaddressid      => ip["id"],
         :protocol         => protocol,
+        :startport        => 1,
+        :endport          => 65535,
       }      
       response = self.class.http_get('createFirewallRule', params) 
       self.class.wait_for_async_call(response["jobid"])   
-    }   
+    }
+    
+    
+    Puppet.debug "Creating firewall rule to allow all ICMP traffic to "+resource[:name]
+          
+    params = { 
+      :ipaddressid      => ip["id"],
+      :protocol         => 'icmp',
+    }      
+    response = self.class.http_get('createFirewallRule', params) 
+    self.class.wait_for_async_call(response["jobid"])  
   end
   
   def update_static_nat
