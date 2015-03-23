@@ -94,10 +94,13 @@ class Puppet::Provider::Rest < Puppet::Provider
     if response == nil
       if command == "resetSSHKeyForVirtualMachine"
         response = responseJson["resetSSHKeyforvirtualmachineresponse"]
+      end      
+      if command == "updateVMAffinityGroup"
+        response = responseJson["updatevirtualmachineresponse"]
       end
       
       if response == nil
-        Puppet.debug "Call #{command} to Cloudstack API did not return an expected result: #{responseJson}"
+        Puppet.debug "Call #{command} to Cloudstack API returned an expected result: #{responseJson}"
       end
     end
       

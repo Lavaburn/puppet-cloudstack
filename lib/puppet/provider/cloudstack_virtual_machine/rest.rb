@@ -57,6 +57,11 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       userdata = Base64.decode64(userdataHash["userdata"])
     end
     
+    affinityGroups = Array.new 
+    object["affinitygroup"].collect do |group|
+      affinityGroups.push(group["name"])
+    end
+    
     {
       :id              => object["id"],
       :name            => object["name"],
@@ -68,6 +73,7 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       :keypair         => object["keypair"],
       :default_network => default_network_name,
       :userdata        => userdata,
+      :affinitygroups  => affinityGroups,
       :state           => object["state"].downcase,
       :ensure          => :present
     }
@@ -194,6 +200,10 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         resourceHash[:userdata] = Base64.encode64(resource[:userdata])
       end
       
+      if resource[:affinitygroups] != nil
+        resourceHash[:affinitygroupnames] = resource[:affinitygroups].join(",")        
+      end
+      
       #API Call
       #Puppet.debug "deployVirtualMachine PARAMS = "+resourceHash.inspect      
       response = self.class.http_get('deployVirtualMachine', resourceHash)
@@ -267,6 +277,25 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       response = self.class.http_get('resetSSHKeyForVirtualMachine', params)      
       self.class.wait_for_async_call(response["jobid"])
             
+      updated = true
+    end
+    
+    # Affinity Group
+    if resource[:affinitygroups] != currentObject[:affinitygroups]
+      Puppet.debug "Updating Affinity Groups for VirtualMachine #{resource[:name]}"
+      
+      if @property_hash[:state] != "stopped"
+        if @property_flush[:ensure] == :stopped
+          stop_virtualMachine
+        else
+          raise "The Affinity Groups can not be updated when the VM is running!"
+        end
+      end
+          
+      params = { :id => @property_hash[:id], :affinitygroupnames => resource[:affinitygroups].join(",")  }
+      response = self.class.http_get('updateVMAffinityGroup', params)      
+      self.class.wait_for_async_call(response["jobid"])
+      
       updated = true
     end
       

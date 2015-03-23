@@ -100,6 +100,10 @@ Puppet::Type.newtype(:cloudstack_virtual_machine) do
     desc "The SSH Keypair"
   end
 
+  newproperty(:affinitygroups, :array_matching => :all) do
+    desc "The Affinity Groups (Array of names)"
+  end
+  
     
   # TODO   
   # projectid   
