@@ -63,9 +63,7 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
       :virtualmachineid => vm["id"],
     }
     #Puppet.debug "enableStaticNat PARAMS = "+params.inspect
-    response = self.class.http_get('enableStaticNat', params)      
-    
-    open_firewall
+    response = self.class.http_get('enableStaticNat', params)  
   end
 
   def disable_static_nat
@@ -80,33 +78,6 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
     #Puppet.debug "disableStaticNat PARAMS = "+params.inspect
     response = self.class.http_get('disableStaticNat', params)      
     self.class.wait_for_async_call(response["jobid"])   
-  end
-  
-  def open_firewall    
-    ip = getIpAddress(resource[:name])    
-      
-    ['tcp', 'udp'].each { |protocol|
-      Puppet.debug "Creating firewall rule to allow all #{protocol} traffic to "+resource[:name]
-      
-      params = { 
-        :ipaddressid      => ip["id"],
-        :protocol         => protocol,
-        :startport        => 1,
-        :endport          => 65535,
-      }      
-      response = self.class.http_get('createFirewallRule', params) 
-      self.class.wait_for_async_call(response["jobid"])   
-    }
-    
-    
-    Puppet.debug "Creating firewall rule to allow all ICMP traffic to "+resource[:name]
-          
-    params = { 
-      :ipaddressid      => ip["id"],
-      :protocol         => 'icmp',
-    }      
-    response = self.class.http_get('createFirewallRule', params) 
-    self.class.wait_for_async_call(response["jobid"])  
   end
   
   def update_static_nat
