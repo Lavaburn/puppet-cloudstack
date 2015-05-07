@@ -29,7 +29,7 @@ Puppet::Type.type(:cloudstack_domain).provide :rest, :parent => Puppet::Provider
     list.each do |object|
       map = getDomain(object)
       if map != nil
-        Puppet.debug "DOMAIN FOUND: "+map.inspect
+        #Puppet.debug "DOMAIN FOUND: "+map.inspect
         result.push(new(map))
       end
     end 
@@ -53,12 +53,12 @@ Puppet::Type.type(:cloudstack_domain).provide :rest, :parent => Puppet::Provider
   def self.getDomain(object)   
     if object["name"] != nil  
       {
-        :id          => object["id"],
-        :name        => object["name"],   
-        :domain      => object["networkdomain"],   
-        :parentid    => object["parentdomainid"],   
-        :parent      => object["parentdomainname"],   
-        :ensure      => :present
+        :id             => object["id"],
+        :name           => object["name"],   
+        :networkdomain  => object["networkdomain"],   
+        :parentid       => object["parentdomainid"],   
+        :parent         => object["parentdomainname"],   
+        :ensure         => :present
       }
     end
   end
@@ -72,7 +72,7 @@ Puppet::Type.type(:cloudstack_domain).provide :rest, :parent => Puppet::Provider
       
     params = {         
       :name             => resource[:name],   
-      :networkdomain    => resource[:domain],   
+      :networkdomain    => resource[:networkdomain],   
     }
         
     # Optional parameters     
@@ -106,7 +106,7 @@ Puppet::Type.type(:cloudstack_domain).provide :rest, :parent => Puppet::Provider
     id = lookupDomainId(resource[:name])
     params = { 
       :id               => id,# Puppet links name to ID, so changing name is not possible !      
-      :networkdomain    => resource[:domain],   
+      :networkdomain    => resource[:networkdomain],   
     }
     Puppet.debug "updateDomain PARAMS = "+params.inspect
     response = self.class.http_get('updateDomain', params)    

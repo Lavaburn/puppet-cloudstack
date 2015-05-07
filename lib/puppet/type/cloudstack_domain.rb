@@ -9,8 +9,8 @@ Puppet::Type.newtype(:cloudstack_domain) do
     desc "The domain name (eg. TEST)"    
   end
   
-  newproperty(:domain) do
-    desc "The domainname (DNS) (eg. test.org) to assign"
+  newproperty(:networkdomain) do
+    desc "The domainname (DNS) (eg. test.org) to use when creating VMs under this domain"
   end  
   
   newproperty(:parent) do

@@ -54,7 +54,7 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
         :dns2             => object["dns2"],   
         :internaldns1     => object["internaldns1"],   
         :internaldns2     => object["internaldns2"],   
-        :domain           => object["domain"],     
+        :networkdomain    => object["domain"],     
         :guestcidraddress => object["guestcidraddress"],   
         :ensure           => :present
       }
@@ -73,7 +73,7 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
       :dns2             => resource[:dns2],   
       :internaldns1     => resource[:internaldns1],   
       :internaldns2     => resource[:internaldns2],   
-      :domain           => resource[:domain],
+      :domain           => resource[:networkdomain],
       :guestcidraddress => resource[:guestcidraddress],   
     }
     #Puppet.debug "createZone PARAMS = "+params.inspect
@@ -109,7 +109,7 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
       :dns2             => resource[:dns2],   
       :internaldns1     => resource[:internaldns1],   
       :internaldns2     => resource[:internaldns2],   
-      :domain           => resource[:domain],
+      :domain           => resource[:networkdomain],
       :guestcidraddress => resource[:guestcidraddress], 
     }
     #Puppet.debug "updateZone PARAMS = "+params.inspect

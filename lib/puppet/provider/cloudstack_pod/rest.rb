@@ -29,7 +29,7 @@ Puppet::Type.type(:cloudstack_pod).provide :rest, :parent => Puppet::Provider::R
     list.each do |object|
       map = getPod(object)
       if map != nil
-        Puppet.debug "POD FOUND: "+map.inspect
+        #Puppet.debug "POD FOUND: "+map.inspect
         result.push(new(map))
       end
     end 

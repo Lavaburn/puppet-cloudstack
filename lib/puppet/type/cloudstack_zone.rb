@@ -29,8 +29,8 @@ Puppet::Type.newtype(:cloudstack_zone) do
     desc "The zone Internal DNS Server2"
   end  
   
-  newproperty(:domain) do
-    desc "The zone domain name"
+  newproperty(:networkdomain) do
+    desc "The domainname (DNS) (eg. test.org) to use when creating VMs under this zone"
   end  
   
   newproperty(:guestcidraddress) do
