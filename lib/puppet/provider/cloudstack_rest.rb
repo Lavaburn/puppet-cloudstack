@@ -21,8 +21,8 @@ class Puppet::Provider::Rest < Puppet::Provider
     
     ip = '172.20.130.3'
     port = '8080'
-    api_key = 'uLnaxqvEBjpAXuvhx1QCbrJCcCzE91VpxaQRBv-PYp9B59U8qh2pZTHZpnAgHZaIVra2JSZa9AzSJ-D0si-0gA'
-    api_secret = 'Pb7nxPwoMnsjffdKiLHWvFBN678IcnVnxQGS915-uqUr2TVRvh_GXKgOItFpMzZJ29Gu4VSVlMi47NyDf0EHtg'
+    api_key = 'tGoLgqlxiQejVN9XeTADw9D-qn8oAaylyYRRc2ahwvB0RHkEdDU6EtclIq8Qmtc7S8GWb5Rp_Rzb2jVSiv7MdQ'
+    api_secret = 'BmPguGG8nql1nIJpe2ai8YWW7n8dVicAgluOt5tNn4BDcXFIBi4q2u9KNarcMZRYiq4V76klqA2LxtlmCJPNCg'
 
     { :ip         => ip,
       :port       => port,
