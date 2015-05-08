@@ -70,15 +70,15 @@
 #  netmask => '255.255.255.0',
 #  gateway => '172.20.112.3',
 #}
-#
-#cloudstack_cluster { 'TESTCLUSTER1':
-#  ensure      => absent,
-#  clustertype => 'CloudManaged',
-#  hypervisor  => 'XenServer',
-#  zone        => 'TESTZONE1',
-#  pod         => 'TESTPOD1',
-#}
-#
+
+cloudstack_cluster { 'TESTCLUSTER1':
+  ensure      => present,
+  clustertype => 'CloudManaged',
+  hypervisor  => 'XenServer',
+  zone        => 'TESTZONE1',
+  pod         => 'TESTPOD1',
+}
+
 #cloudstack_domain { 'RCS':
 #  ensure        => present,
 #  networkdomain => 'rcswimax.com',
@@ -108,26 +108,132 @@
 #  password    => 'secret',
 #}
 
+#cloudstack_service_offering { 'Small':
+#  ensure      => absent,
+#  displaytext => 'Small - 1 Core, 1 GB',
+#  cpunumber   => '1',
+#  cpuspeed    => '1000',
+#  memory      => '1024',
+#  offerha     => false,
+#  storagetype => 'local',
+#  tags        => ['stag1', 'stag2'],
+#  hosttags    => 'htag2',
+#}
+
+#cloudstack_service_offering { 'Larger System Router':
+#  ensure      => absent,
+#  displaytext => 'Larger System Router - 1 Core, 512 MB :-)',
+#  cpunumber   => '1',
+#  cpuspeed    => '1000',
+#  memory      => '512',
+#  offerha     => true,
+#  storagetype => 'shared',
+#  tags        => 'stag1_sys',
+#  hosttags    => 'htag2_sys',
+#  systemvm    => 'domainrouter',
+#}
+
+#cloudstack_disk_offering { 'Standard_50GB':
+#  ensure      => absent,
+#  displaytext => '50 GB Standard',
+#  storagetype => 'shared',
+#  disksize    => '50',
+#  tags        => ['std'],
+#}
+
+#cloudstack_network_offering { 'FullFeature_TEST':
+#  ensure              => 'enabled',
+#  displaytext         => 'Enabled ALL services',
+#  guestiptype         => 'isolated',
+#  ispersistent        => true,
+#  conservemode        => true,
+#  availability        => 'Optional',    # Can't be required without SourceNat     # System can only have 1 with Required !
+#  specifyvlan         => true,
+#  specifyipranges     => false,         # can't be true if SourceNat
+#  egressdefaultpolicy => true,
+#  serviceoffering     => 'System Offering For Software Router',
+#  tags                =>  ['testnet'],
+#  service             => [
+#    {
+#      name     => 'Vpn',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'Dhcp',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'Dns',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'Firewall',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'Lb',# Load Balancer
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'UserData',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'SourceNat',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'StaticNat',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }, {
+#      name     => 'PortForwarding',
+#      provider => [
+#        {
+#          name => 'VirtualRouter'
+#        }]
+#    }
+#  ]
+#}
 
 
 
 
-  #  createServiceOffering
-  #  createNetworkOffering
-  #  createDiskOffering
 
 
 
+
+
+
+  #  createStoragePool
+  #  addImageStore
+
+
+
+
+  #  createVlanIpRange
 
 
 
   #  createNetwork
-  #  createStoragePool
-  #  addImageStore
 
   #  addHost (XenServer => Razor => Exported Resource??)
-
-  #  createVlanIpRange
 
   #  createTemplate
   #  registerIso
