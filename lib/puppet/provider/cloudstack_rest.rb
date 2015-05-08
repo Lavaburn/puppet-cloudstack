@@ -178,7 +178,6 @@ class Puppet::Provider::Rest < Puppet::Provider
     arr
   end
   
-  #zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')  # name = resource[:zone]    =>  id
   def self.genericLookup(command, objectName, lookupVar, lookupVal, otherParams, returnVar)
     params = otherParams
     params[lookupVar] = lookupVal

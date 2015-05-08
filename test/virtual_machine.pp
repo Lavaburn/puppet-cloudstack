@@ -235,23 +235,96 @@
 #  url    => 'nfs://172.20.0.2/mystaging',
 #}
 
-cloudstack_physical_network { '':
+#cloudstack_physical_network { 'TEST_PHY_NET1':
+#  zone             => 'TESTZONE1',
+#  # domain          => 'RCS',
+#  isolationmethods => 'VLAN',
+#  #vlan             => '???',
+#  tags             => ['physical1'],
+#}
+#
+#cloudstack_traffic_type { 'TEST_PHY_NET1_Guest':
+#  physicalnetwork => 'TEST_PHY_NET1',
+#  traffictype     => 'Guest',
+#  label           => 'GUEST1',
+#}
+#
+#cloudstack_traffic_type { 'TEST_PHY_NET1_Management':
+#  physicalnetwork => 'TEST_PHY_NET1',
+#  traffictype     => 'Management',
+#  label           => 'DMZ',
+#}
+#
+#cloudstack_traffic_type { 'TEST_PHY_NET1_Storage':
+#  physicalnetwork => 'TEST_PHY_NET1',
+#  traffictype     => 'Storage',
+#  label           => 'STORE',
+#}
+#
+#cloudstack_traffic_type { 'TEST_PHY_NET1_Public':
+#  physicalnetwork => 'TEST_PHY_NET1',
+#  traffictype     => 'Public',
+#  label           => 'PUBLIC',
+#}
 
-}
+## Public IP for System Routers
+#cloudstack_network_vlan { 'TEST_PHY_NET1_3011_105.235.209.130':
+#  ensure           => present,
+#  vlan             => '3011',
+#  zone             => 'TESTZONE1',
+#	startip          => '105.235.209.130',
+#	endip            => '105.235.209.140',
+#	netmask          => '255.255.255.128',
+#	gateway          => '105.235.209.129',
+#	physicalnetwork  => 'TEST_PHY_NET1',
+#}
+#
+## Public IP for VMs
+#cloudstack_network_vlan { 'TEST_PHY_NET1_3011_105.235.209.141':
+#  ensure           => absent,
+#  vlan             => '3011',
+#  zone             => 'TESTZONE1',
+#  account          => 'JUBANOC',
+#  domain           => 'RCS',
+#  startip          => '105.235.209.141',
+#  endip            => '105.235.209.160',
+#  netmask          => '255.255.255.128',
+#  gateway          => '105.235.209.129',
+#  physicalnetwork  => 'TEST_PHY_NET1',
+#}
+
+#cloudstack_network_storage_vlan { 'TESTPOD1_172.20.141.10':
+#  ensure           => absent,
+#  vlan             => '3021',
+#  startip          => '172.20.141.10',
+#  endip            => '172.20.141.20',
+#  netmask          => '255.255.255.0',
+#  gateway          => '172.20.141.1',
+#  pod              => 'TESTPOD1',
+#}
+
+# TODO Guest Network !!
 
 
-
-  # TODO NEXT - createNetwork
-
-  # TODO NEXT - createVlanIpRange
-
-
-
-
+# PUBLIC      => createVlanIpRange              DONE
+# GUEST       => createNetwork
+#             => dedicateGuestVlanRange
+# MANAGEMENT  => (See POD)                      DONE
+# STORAGE     => createStorageNetworkIpRange    DONE
 
 
 
   #  addHost (XenServer => Razor => Exported Resource??)
+
+
+
+
+
+
+
+
+
+
 
   #  createTemplate
   #  registerIso
