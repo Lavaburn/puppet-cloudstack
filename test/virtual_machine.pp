@@ -71,13 +71,13 @@
 #  gateway => '172.20.112.3',
 #}
 
-cloudstack_cluster { 'TESTCLUSTER1':
-  ensure      => present,
-  clustertype => 'CloudManaged',
-  hypervisor  => 'XenServer',
-  zone        => 'TESTZONE1',
-  pod         => 'TESTPOD1',
-}
+#cloudstack_cluster { 'TESTCLUSTER1':
+#  ensure      => present,
+#  clustertype => 'CloudManaged',
+#  hypervisor  => 'XenServer',
+#  zone        => 'TESTZONE1',
+#  pod         => 'TESTPOD1',
+#}
 
 #cloudstack_domain { 'RCS':
 #  ensure        => present,
@@ -212,26 +212,44 @@ cloudstack_cluster { 'TESTCLUSTER1':
 #  ]
 #}
 
+# TODO - FULL FEATURE TESTING - ADD MAINTENANCE OPTIONS(?) - REQUIRES A HOST TO BE UP !!!
+#cloudstack_primary_storage { 'TEST-Xen-LOCAL':
+#  scope         => 'cluster',
+#  zone          => 'TESTZONE1',
+#  pod           => 'TESTPOD1',
+#  cluster       => 'TESTCLUSTER1',
+#  #hypervisor    => '',
+#  url           => 'presetup://localhost/XEN_TEST_TAG',
+#  tags          => ['DAS', 'SAS'],
+#}
+
+#cloudstack_secondary_storage { 'MyTemplatesTest':
+#  ensure => present,
+#  zone   => 'TESTZONE1',
+#  url    => 'nfs://172.20.0.1/mytemplates',
+#}
+
+#cloudstack_secondary_staging_storage { 'nfs://172.20.0.2/mystaging':
+#  ensure => absent,
+#  zone   => 'TESTZONE1',
+#  url    => 'nfs://172.20.0.2/mystaging',
+#}
+
+cloudstack_physical_network { '':
+
+}
+
+
+
+  # TODO NEXT - createNetwork
+
+  # TODO NEXT - createVlanIpRange
 
 
 
 
 
 
-
-
-
-  #  createStoragePool
-  #  addImageStore
-
-
-
-
-  #  createVlanIpRange
-
-
-
-  #  createNetwork
 
   #  addHost (XenServer => Razor => Exported Resource??)
 
@@ -239,3 +257,4 @@ cloudstack_cluster { 'TESTCLUSTER1':
   #  registerIso
 
   # Snapshots (recurring?))
+

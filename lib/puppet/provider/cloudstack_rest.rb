@@ -97,10 +97,13 @@ class Puppet::Provider::Rest < Puppet::Provider
       end      
       if command == "updateVMAffinityGroup"
         response = responseJson["updatevirtualmachineresponse"]
-      end
-      
+      end      
+      if command == :listSecondaryStagingStores
+        response = responseJson["listsecondarystagingstoreresponse"]
+      end # TODO STRINGS OR SYMBOLS ??? :a != "a"
+            
       if response == nil
-        Puppet.debug "Call #{command} to Cloudstack API returned an expected result: #{responseJson}"
+        Puppet.debug "Call #{command} to Cloudstack API returned an unexpected result: #{responseJson}"
       end
     end
       
@@ -161,4 +164,34 @@ class Puppet::Provider::Rest < Puppet::Provider
       end
     end
   end
+  
+  # Helpers/Utilities
+  def self.convertCSVtoArray(csv)
+    arr = Array.new 
+    
+    if csv != nil
+      csv.split(",").each do |item|
+        arr.push(item)
+      end
+    end   
+    
+    arr
+  end
+  
+  #zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')  # name = resource[:zone]    =>  id
+  def self.genericLookup(command, objectName, lookupVar, lookupVal, otherParams, returnVar)
+    params = otherParams
+    params[lookupVar] = lookupVal
+    
+    list = get_objects(command, objectName, params)        
+    if list != nil
+      list.each do |object|    
+        if object[lookupVar] == lookupVal
+          return object[returnVar]
+        end        
+      end
+    end
+
+    raise "Could not find "+objectName+" with params: "+params.inspect
+  end  
 end

@@ -74,12 +74,7 @@ Puppet::Type.type(:cloudstack_network_offering).provide :rest, :parent => Puppet
     
   def self.getNetworkOffering(object)   
     if object["name"] != nil        
-      tags = Array.new 
-      if object["tags"] != nil
-        object["tags"].split(",").each do |tag|
-           tags.push(tag)
-        end
-      end
+      tags = convertCSVtoArray(object["tags"])
   
       params = { :id => object['serviceofferingid'] }
       serviceoffering = getServiceOffering(params)

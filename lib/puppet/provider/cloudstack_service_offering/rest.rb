@@ -73,20 +73,9 @@ Puppet::Type.type(:cloudstack_service_offering).provide :rest, :parent => Puppet
         systemvm = false
       end
       
-      tags = Array.new 
-      if object["tags"] != nil
-        object["tags"].split(",").each do |tag|
-           tags.push(tag)
-        end
-      end
-      
-      hosttags = Array.new 
-      if object["hosttags"] != nil
-        object["hosttags"].split(",").each do |tag|
-          hosttags.push(tag)
-        end
-      end
-              
+      tags = convertCSVtoArray(object["tags"])
+      hosttags = convertCSVtoArray(object["hosttags"])
+                      
       {
         :id          => object["id"],
         :name        => object["name"],   

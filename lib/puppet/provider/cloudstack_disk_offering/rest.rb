@@ -51,12 +51,7 @@ Puppet::Type.type(:cloudstack_disk_offering).provide :rest, :parent => Puppet::P
     
   def self.getDiskOffering(object)   
     if object["name"] != nil        
-      tags = Array.new 
-      if object["tags"] != nil
-        object["tags"].split(",").each do |tag|
-           tags.push(tag)
-        end
-      end
+      tags = convertCSVtoArray(object["tags"])
               
       {
         :id          => object["id"],
