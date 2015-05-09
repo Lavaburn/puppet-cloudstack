@@ -1,7 +1,7 @@
-# Custom Type: Cloudstack - Physical Network
+# Custom Type: Cloudstack - Network Service Provider
 
-Puppet::Type.newtype(:cloudstack_physical_network) do
-  @doc = "Cloudstack Physical Network"
+Puppet::Type.newtype(:cloudstack_network_provider) do
+  @doc = "Cloudstack Network"
 
   ensurable do
     defaultto :present
@@ -13,7 +13,11 @@ Puppet::Type.newtype(:cloudstack_physical_network) do
     newvalue(:enabled) do
       provider.setState(:enabled)
     end
-        
+     
+    newvalue(:shutdown) do
+      provider.setState(:shutdown)
+    end
+   
     newvalue(:disabled) do
       provider.setState(:disabled)
     end
@@ -32,6 +36,9 @@ Puppet::Type.newtype(:cloudstack_physical_network) do
           when :enabled
             return false if is == :absent                          
             return (provider.getState == "enabled")
+          when :shutdown
+            return false if is == :absent                          
+            return (provider.getState == "shutdown")
           when :disabled
             return false if is == :absent                          
             return (provider.getState == "disabled")       
@@ -42,30 +49,19 @@ Puppet::Type.newtype(:cloudstack_physical_network) do
   end
       
   newparam(:name, :namevar => true) do
-    desc "The physical network name"    
+    desc "The provider name [Format: Network_Provider]"    
   end
-    
-  newproperty(:zone) do   # ID
-    desc "The zone that this physical network belongs to"
+
+  newproperty(:physicalnetwork) do  # ID
+    desc "The physical network that the provider is linked to"
   end  
   
-  newproperty(:domain) do  # ID
-    desc "The domain that this physical network belongs to"
+  newproperty(:service_provider) do
+    desc "The service provider name"
   end  
-  
-  newproperty(:isolationmethods) do
-    desc "The isolation method (VLAN/GRE/L3)"
-  end  
-  
-  newproperty(:vlan) do
-    desc "The VLAN tag (range) for guest traffic"
-  end  
-  
-  newproperty(:tags, :array_matching => :all) do
-    desc "The network tags"
-  end  
-  
+      
   # UNUSED:
-    # networkspeed (1G)
-    # broadcastdomainrange [Zone => Advanced / Pod => Basic]
+    # [C/R  ] destinationphysicalnetworkid
+    # [C/R/U] servicelist
+    # [  R  ] canenableindividualservice
 end

@@ -6,16 +6,25 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
   mk_resource_methods
   
   def flush    
-    if @property_flush[:ensure] == :present
-      createPhysicalNetwork
-      return
-    end
-    
     if @property_flush[:ensure] == :absent
       deletePhysicalNetwork
       return
     end 
-
+    
+    if @property_flush[:ensure] != :absent
+      return if createPhysicalNetwork
+    end
+    
+    if @property_flush[:ensure] == :enabled
+      enablePhysicalNetwork
+      return
+    end 
+        
+    if @property_flush[:ensure] == :disabled
+      disablePhysicalNetwork
+      return
+    end 
+    
     updatePhysicalNetwork
   end  
 
@@ -29,7 +38,7 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
     list.each do |object|    
       map = getPhysicalNetwork(object)
       if map != nil
-        Puppet.debug "Physical Network: "+map.inspect
+        #Puppet.debug "Physical Network: "+map.inspect
         result.push(new(map))
       end
     end 
@@ -61,34 +70,49 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
         :isolationmethods => object["isolationmethods"],
         :vlan             => object["vlan"], 
         :tags             => tags,
+        :state            => object["state"].downcase,
         :ensure           => :present
       }
     end
   end
   
-  # TYPE SPECIFIC      
+  # TYPE SPECIFIC 
+  def setState(state)
+    @property_flush[:ensure] = state
+  end  
+  
+  def getState
+    @property_hash[:state]
+  end       
+    
   private
   def createPhysicalNetwork
-    Puppet.debug "Create Physical Network "+resource[:name]
- 
-    zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')
+    if @property_hash.empty?            
+      Puppet.debug "Create Physical Network "+resource[:name]
+   
+      zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')
+        
+      params = {         
+        :name               => resource[:name],   
+        :zoneid             => zoneid,           
+        :isolationmethods   => resource[:isolationmethods],   
+        :vlan               => resource[:vlan],   
+        :tags               => resource[:tags].join(","), 
+      }
       
-    params = {         
-      :name               => resource[:name],   
-      :zoneid             => zoneid,           
-      :isolationmethods   => resource[:isolationmethods],   
-      :vlan               => resource[:vlan],   
-      :tags               => resource[:tags].join(","), 
-    }
-    
-    if resource[:domain] != nil
-      domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')
-      params[:domainid] = domainid
+      if resource[:domain] != nil
+        domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')
+        params[:domainid] = domainid
+      end
+              
+      Puppet.debug "createPhysicalNetwork PARAMS = "+params.inspect
+      response = self.class.http_get('createPhysicalNetwork', params)
+      self.class.wait_for_async_call(response["jobid"])
+        
+      true
     end
-            
-    Puppet.debug "createPhysicalNetwork PARAMS = "+params.inspect
-    response = self.class.http_get('createPhysicalNetwork', params)
-    self.class.wait_for_async_call(response["jobid"])
+    
+    false
   end
 
   def deletePhysicalNetwork
@@ -114,17 +138,41 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
       id = lookupId
       params = { 
         :id      => id,   
-        :vlan    =>  resource[:vlan],    
+        :vlan    => resource[:vlan],    
         :tags    => resource[:tags].join(","),  
       }
       Puppet.debug "updatePhysicalNetwork PARAMS = "+params.inspect
-#      response = self.class.http_get('updateStoragePool', params)    
+      response = self.class.http_get('updatePhysicalNetwork', params)    
      
-#      self.class.wait_for_async_call(response["jobid"])
+      self.class.wait_for_async_call(response["jobid"])
     else 
       raise "Only tags and vlan can be updated for Physical Network !!!"  
     end
   end  
+  
+  def updateState(state)
+    id = lookupId
+    params = { 
+      :id      => id,   
+      :state   => state,
+    }
+    Puppet.debug "updatePhysicalNetwork PARAMS = "+params.inspect
+      response = self.class.http_get('updatePhysicalNetwork', params)    
+   
+      self.class.wait_for_async_call(response["jobid"])
+  end
+  
+  def enablePhysicalNetwork
+    Puppet.debug "Enable Physical Network "+resource[:name]
+      
+    updateState("Enabled")
+  end
+  
+  def disablePhysicalNetwork
+    Puppet.debug "Disable Physical Network "+resource[:name]
+      
+    updateState("Disabled")    
+  end
   
   def lookupId 
     return self.class.genericLookup(:listPhysicalNetworks, 'physicalnetwork', 'name', resource[:name], {}, 'id')    

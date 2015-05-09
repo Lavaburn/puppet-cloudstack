@@ -3,7 +3,7 @@
 Puppet::Type.newtype(:cloudstack_network) do
   @doc = "Cloudstack Network"
 
-  ensurable   # Enable/Disable ??
+  ensurable   # TODO Enable/Disable ??
       
   newparam(:name, :namevar => true) do
     desc "The network name"    
@@ -44,7 +44,7 @@ Puppet::Type.newtype(:cloudstack_network) do
   newproperty(:gateway) do
     desc "The gateway"
   end    
-  
+
   newproperty(:account) do
     desc "The account that owns the network"
   end  
@@ -52,12 +52,11 @@ Puppet::Type.newtype(:cloudstack_network) do
   newproperty(:domain) do # ID
     desc "The domain of the account that owns the network"
   end  
-  
+
   newproperty(:networkdomain) do
     desc "The domainname (DNS) (eg. test.org) to use when creating VMs on this network"
   end  
-  
-  
+    
   # UNUSED:
     # startipv6 - endipv6 - ip6cidr - ip6gateway
     # acltype - aclid

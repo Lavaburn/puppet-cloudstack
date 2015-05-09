@@ -178,14 +178,14 @@ class Puppet::Provider::Rest < Puppet::Provider
     arr
   end
   
-  def self.genericLookup(command, objectName, lookupVar, lookupVal, otherParams, returnVar)
+  def self.genericLookup(command, objectName, lookupVar, lookupVal, otherParams, returnVar, verify = true)
     params = otherParams
     params[lookupVar] = lookupVal
     
     list = get_objects(command, objectName, params)        
     if list != nil
       list.each do |object|    
-        if object[lookupVar] == lookupVal
+        if object[lookupVar] == lookupVal || !verify
           return object[returnVar]
         end        
       end

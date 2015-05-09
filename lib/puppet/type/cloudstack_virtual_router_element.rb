@@ -1,7 +1,7 @@
-# Custom Type: Cloudstack - Physical Network
+# Custom Type: Cloudstack - VirtualRouter Element
 
-Puppet::Type.newtype(:cloudstack_physical_network) do
-  @doc = "Cloudstack Physical Network"
+Puppet::Type.newtype(:cloudstack_virtual_router_element) do
+  @doc = "Cloudstack VirtualRouter Element"
 
   ensurable do
     defaultto :present
@@ -42,30 +42,17 @@ Puppet::Type.newtype(:cloudstack_physical_network) do
   end
       
   newparam(:name, :namevar => true) do
-    desc "The physical network name"    
+    desc "The provider name [Format: Network_Provider]"    
   end
-    
-  newproperty(:zone) do   # ID
-    desc "The zone that this physical network belongs to"
+
+  newproperty(:physicalnetwork) do  # ID
+    desc "The physical network that the provider is linked to"
   end  
   
-  newproperty(:domain) do  # ID
-    desc "The domain that this physical network belongs to"
+  newproperty(:providertype) do
+    desc "The service provider type (VirtualRouter/VpcVirtualRouter)"
   end  
-  
-  newproperty(:isolationmethods) do
-    desc "The isolation method (VLAN/GRE/L3)"
-  end  
-  
-  newproperty(:vlan) do
-    desc "The VLAN tag (range) for guest traffic"
-  end  
-  
-  newproperty(:tags, :array_matching => :all) do
-    desc "The network tags"
-  end  
-  
-  # UNUSED:
-    # networkspeed (1G)
-    # broadcastdomainrange [Zone => Advanced / Pod => Basic]
+      
+  # LIST ONLY: 
+    # account/domain/project
 end
