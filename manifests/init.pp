@@ -149,5 +149,9 @@ class cloudstack (
   contain 'cloudstack::install'
   contain 'cloudstack::config'
 
-  Class['cloudstack::install'] -> Class['cloudstack::config']
+  service { 'cloudstack-management':
+    ensure => running,
+  }
+
+  Class['cloudstack::install'] -> Class['cloudstack::config'] -> Service['cloudstack-management']
 }
