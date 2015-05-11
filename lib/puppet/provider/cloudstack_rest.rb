@@ -17,14 +17,37 @@ class Puppet::Provider::Rest < Puppet::Provider
   end
     
   def self.get_rest_info
-    # TODO - read the below variables from a config file
+    config_file = "/etc/puppet/cloudstack_api.yaml"
     
-    ip = '172.20.130.3'
-    port = '8080'
-    api_key = 'tGoLgqlxiQejVN9XeTADw9D-qn8oAaylyYRRc2ahwvB0RHkEdDU6EtclIq8Qmtc7S8GWb5Rp_Rzb2jVSiv7MdQ'
-    api_secret = 'BmPguGG8nql1nIJpe2ai8YWW7n8dVicAgluOt5tNn4BDcXFIBi4q2u9KNarcMZRYiq4V76klqA2LxtlmCJPNCg'
+    data = File.read(config_file) or raise "Could not read setting file #{config_file}"    
+    yamldata = YAML.load(data)
+    
+    if yamldata.include?('ip')
+      ip = yamldata['ip']
+    else
+      ip = '127.0.0.1'
+    end
 
-    { :ip         => ip,
+    if yamldata.include?('port')
+      port = yamldata['port']
+    else
+      port = '8080'
+    end
+    
+    if yamldata.include?('api_key')
+      api_key = yamldata['api_key']
+    else
+      raise "The configuration file #{config_file} should include an entry 'api_key'"
+    end
+    
+    if yamldata.include?('api_secret')
+      api_secret = yamldata['api_secret']
+    else
+      raise "The configuration file #{config_file} should include an entry 'api_secret'"
+    end
+    
+    { 
+      :ip         => ip,
       :port       => port,
       :api_key    => api_key,
       :api_secret => api_secret
