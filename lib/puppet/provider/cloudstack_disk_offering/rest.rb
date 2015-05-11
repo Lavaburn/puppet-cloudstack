@@ -29,7 +29,7 @@ Puppet::Type.type(:cloudstack_disk_offering).provide :rest, :parent => Puppet::P
     list.each do |object|
       map = getDiskOffering(object)
       if map != nil
-        Puppet.debug "DiskOffering FOUND: "+map.inspect
+        #Puppet.debug "DiskOffering FOUND: "+map.inspect
         result.push(new(map))
       end
     end 

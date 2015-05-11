@@ -61,14 +61,14 @@
 #  networkdomain    => 'test1.rcswimax.com',
 #  guestcidraddress => '172.20.111.0/24',
 #}
-#
+
 #cloudstack_pod { 'TESTPOD1':
 #  ensure  => present,
 #  zone    => 'TESTZONE1',
-#  startip => '172.20.112.100',    # NOT the same as guestcidraddress !!!
-#  endip   => '172.20.112.200',
+#  startip => '172.20.130.200',    # Reserved/Used by System VMs (Secondary Storage, Router?) [OUTSIDE RAZOR DHCP]
+#  endip   => '172.20.130.240',
 #  netmask => '255.255.255.0',
-#  gateway => '172.20.112.3',
+#  gateway => '172.20.130.1',      # Should be in same network as the Hypervisors !! (MANAGEMENT VLAN)
 #}
 
 #cloudstack_cluster { 'TESTCLUSTER1':
@@ -134,7 +134,7 @@
 #}
 
 #cloudstack_disk_offering { 'Standard_50GB':
-#  ensure      => absent,
+#  ensure      => present,
 #  displaytext => '50 GB Standard',
 #  storagetype => 'shared',
 #  disksize    => '50',
@@ -212,21 +212,27 @@
 #  ]
 #}
 
-# TODO - FULL FEATURE TESTING - ADD MAINTENANCE OPTIONS(?) - REQUIRES A HOST TO BE UP !!!
 #cloudstack_primary_storage { 'TEST-Xen-LOCAL':
+#  ensure        => absent,
 #  scope         => 'cluster',
 #  zone          => 'TESTZONE1',
 #  pod           => 'TESTPOD1',
 #  cluster       => 'TESTCLUSTER1',
 #  #hypervisor    => '',
-#  url           => 'presetup://localhost/XEN_TEST_TAG',
-#  tags          => ['DAS', 'SAS'],
+#  url           => 'PreSetup://localhost/Xen-PV1',
+#  tags          => ['SAS'],
 #}
 
 #cloudstack_secondary_storage { 'MyTemplatesTest':
-#  ensure => present,
+#  ensure => absent,
 #  zone   => 'TESTZONE1',
 #  url    => 'nfs://172.20.0.1/mytemplates',
+#}
+#
+#cloudstack_secondary_storage { 'Cloudstack_Temporary':
+#  ensure => present,
+#  zone   => 'TESTZONE1',
+#  url    => 'nfs://172.20.130.3/secondary',
 #}
 
 #cloudstack_secondary_staging_storage { 'nfs://172.20.0.2/mystaging':
@@ -236,35 +242,36 @@
 #}
 
 #cloudstack_physical_network { 'TEST_PHY_NET1':
+#  ensure           => enabled,
 #  zone             => 'TESTZONE1',
 #  # domain          => 'RCS',
 #  isolationmethods => 'VLAN',
-#  #vlan             => '???',
+#  vlan             => '3030-3039',
 #  tags             => ['physical1'],
 #}
-#
+
 #cloudstack_traffic_type { 'TEST_PHY_NET1_Guest':
 #  physicalnetwork => 'TEST_PHY_NET1',
 #  traffictype     => 'Guest',
-#  label           => 'GUEST1',
+#  label           => 'Private',
 #}
 #
 #cloudstack_traffic_type { 'TEST_PHY_NET1_Management':
 #  physicalnetwork => 'TEST_PHY_NET1',
 #  traffictype     => 'Management',
-#  label           => 'DMZ',
+#  label           => 'BOND',
 #}
 #
 #cloudstack_traffic_type { 'TEST_PHY_NET1_Storage':
 #  physicalnetwork => 'TEST_PHY_NET1',
 #  traffictype     => 'Storage',
-#  label           => 'STORE',
+#  label           => 'SAN',
 #}
 #
 #cloudstack_traffic_type { 'TEST_PHY_NET1_Public':
 #  physicalnetwork => 'TEST_PHY_NET1',
 #  traffictype     => 'Public',
-#  label           => 'PUBLIC',
+#  label           => 'Public',
 #}
 
 ## Public IP for System Routers
@@ -278,7 +285,7 @@
 #	gateway          => '105.235.209.129',
 #	physicalnetwork  => 'TEST_PHY_NET1',
 #}
-#
+
 ## Public IP for VMs
 #cloudstack_network_vlan { 'TEST_PHY_NET1_3011_105.235.209.141':
 #  ensure           => absent,
@@ -303,31 +310,65 @@
 #  pod              => 'TESTPOD1',
 #}
 
-# TODO Guest Network !!
+#cloudstack_virtual_router_element { 'TEST_PHY_NET1_VirtualRouter':
+#  ensure           => enabled,
+#  physicalnetwork  => 'TEST_PHY_NET1',
+#  providertype     => 'VirtualRouter',
+#}
+#
+#cloudstack_network_provider { 'TEST_PHY_NET1_VirtualRouter':
+#  ensure           => enabled,
+#  physicalnetwork  => 'TEST_PHY_NET1',
+#  service_provider => 'VirtualRouter',
+#}
+
+#cloudstack_network { 'guest1':
+#  ensure           => present,
+#  displaytext      => 'Guest Network #1',
+#  networkoffering  => 'FullFeature_TEST',       # Type = Shared defined in this offering - Needs to support Dhcp
+#  zone             => 'TESTZONE1',
+#  # physicalnetwork  => 'TEST_PHY_NET1',        # Only for type = Shared !!
+#  vlan             => '3041',
+#  startip          => '172.20.151.10',
+#  endip            => '172.20.151.100',
+#  netmask          => '255.255.255.0',
+#  gateway          => '172.20.151.1',
+#  account          => 'JUBANOC',
+#  domain           => 'RCS',
+#  networkdomain    => 'juba.rcswimax.com',
+#}
+
+#cloudstack_guest_vlan { '3032-3033':    # Fits in range set on Physical Network !!
+#  ensure            => present,
+#  physicalnetwork   => 'TEST_PHY_NET1',
+#  account           => 'JUBANOC',
+#  domain            => 'RCS',
+#}
+
+#cloudstack_host { 'hypervisor3.rcswimax.com':
+#  ensure      => enabled,
+#  ipaddress   => '172.20.130.83',
+#  username    => 'root',
+#  password    => 'xenserver',
+#  hypervisor  => 'XenServer',
+#  cluster     => 'TESTCLUSTER1',
+#  zone        => 'TESTZONE1',
+#  pod         => 'TESTPOD1',
+#  tags        => ['deltas'],
+#}    # XenServer::install => Exported Resource !!
+
+#cloudstack_volume { 'TEST_DATADISK':
+#  ensure          => absent,
+#  diskoffering    => 'Standard_50GB',
+#  zone            => 'TESTZONE1',
+#}
 
 
-# PUBLIC      => createVlanIpRange              DONE
-# GUEST       => createNetwork
-#             => dedicateGuestVlanRange
-# MANAGEMENT  => (See POD)                      DONE
-# STORAGE     => createStorageNetworkIpRange    DONE
 
+# TODO - Week 20 !
+  # ATTACH volume to VM
 
-
-  #  addHost (XenServer => Razor => Exported Resource??)
-
-
-
-
-
-
-
-
-
-
-
-  #  createTemplate
-  #  registerIso
-
-  # Snapshots (recurring?))
-
+  # ISO           (1)
+  # Template      (2)
+  # Snapshot      (3)
+  # Configuration (4)

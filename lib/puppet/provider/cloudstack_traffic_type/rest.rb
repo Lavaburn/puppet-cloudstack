@@ -30,7 +30,7 @@ Puppet::Type.type(:cloudstack_traffic_type).provide :rest, :parent => Puppet::Pr
           list.each do |object|    
             map = getTrafficType(object)
             if map != nil
-              Puppet.debug "Traffic Type: "+map.inspect
+              #Puppet.debug "Traffic Type: "+map.inspect
               result.push(new(map))
             end
           end

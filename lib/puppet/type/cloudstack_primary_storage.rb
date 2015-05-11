@@ -3,7 +3,46 @@
 Puppet::Type.newtype(:cloudstack_primary_storage) do
   @doc = "Cloudstack Primary Storage"
 
-  ensurable   # TODO MAINTENANCE !!!
+  ensurable do
+    defaultto :present
+    
+    newvalue(:present) do
+      provider.setState(:present)      
+    end
+
+    newvalue(:absent) do
+      provider.setState(:absent)      
+    end
+    
+    newvalue(:maintenance) do
+      provider.setState(:maintenance)
+    end
+  
+    newvalue(:up) do
+      provider.setState(:up)
+    end
+    
+    def insync?(is)
+      @should.each { |should| 
+        case should
+          when :present
+            return true unless [:absent].include?(is)
+          when :absent
+            return true if is == :absent
+          when :maintenance
+            return false if is == :absent
+                  
+            return (provider.getState == "prepareformaintenance" or provider.getState == "maintenance")      
+          when :up
+            return false if is == :absent
+                  
+            return (provider.getState == "up")  
+        end
+      }            
+      false   
+         
+    end
+  end
       
   newparam(:name, :namevar => true) do
     desc "The storage unit name"    
