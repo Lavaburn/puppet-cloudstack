@@ -46,6 +46,6 @@ class cloudstack::config::cloudstack::mysql inherits ::cloudstack {
   exec { 'Setup Cloudstack with MySQL database':
     command     => "${bin} ${db} ${security} ${deploy}",
     require     => Exec['patch-cloudstack-schema-premium'],
-    unless      => "/usr/bin/mysql -h ${::cloudstack::hostname_database} -u ${::cloudstack::database_username} -p ${::cloudstack::database_password} cloud",
+    unless      => "/usr/bin/mysql -h${::cloudstack::hostname_database} -u${::cloudstack::database_username} -p${::cloudstack::database_password} cloud",
   }
 }
