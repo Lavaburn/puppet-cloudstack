@@ -109,7 +109,7 @@ Puppet::Type.type(:cloudstack_virtual_router_element).provide :rest, :parent => 
       response = self.class.http_get('createVirtualRouterElement', params)                     
       self.class.wait_for_async_call(response["jobid"])  
       
-      true
+      return true
     end
       
     false

@@ -111,7 +111,7 @@ Puppet::Type.type(:cloudstack_host).provide :rest, :parent => Puppet::Provider::
       Puppet.debug "addHost PARAMS = "+params.inspect
       #response = self.class.http_get('addHost', params)    # TODO ENABLE !
       
-      true
+      return true
     end
       
     false

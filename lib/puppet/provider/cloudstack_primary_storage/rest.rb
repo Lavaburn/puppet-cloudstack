@@ -117,7 +117,7 @@ Puppet::Type.type(:cloudstack_primary_storage).provide :rest, :parent => Puppet:
       Puppet.debug "createStoragePool PARAMS = "+params.inspect
       response = self.class.http_get('createStoragePool', params)
       
-      true
+      return true
     end
     
     false

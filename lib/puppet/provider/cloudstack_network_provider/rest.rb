@@ -91,7 +91,7 @@ Puppet::Type.type(:cloudstack_network_provider).provide :rest, :parent => Puppet
       response = self.class.http_get('addNetworkServiceProvider', params)                     
       self.class.wait_for_async_call(response["jobid"])  
         
-      true
+      return true
     end
     
     false

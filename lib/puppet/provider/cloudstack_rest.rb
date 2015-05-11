@@ -107,6 +107,9 @@ class Puppet::Provider::Rest < Puppet::Provider
       if command == 'cancelStorageMaintenance'
         response = responseJson["cancelprimarystoragemaintenanceresponse"]
       end
+      if command == 'deleteIso'
+        response = responseJson["deleteisosresponse"]
+      end
           
       if response == nil
         Puppet.debug "Call #{command} to Cloudstack API returned an unexpected result: #{responseJson}"
