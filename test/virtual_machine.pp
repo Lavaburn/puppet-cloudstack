@@ -213,7 +213,7 @@
 #}
 
 #cloudstack_primary_storage { 'TEST-Xen-LOCAL':
-#  ensure        => absent,
+#  ensure        => present,
 #  scope         => 'cluster',
 #  zone          => 'TESTZONE1',
 #  pod           => 'TESTPOD1',
@@ -363,12 +363,56 @@
 #  zone            => 'TESTZONE1',
 #}
 
+#cloudstack_iso { 'Ubuntu 14.04.2 LTS':
+#  ensure        => present,
+#  displaytext   => 'Ubuntu 14.04.2 LTS (Trusty Tahr)',
+#  url           => 'http://releases.ubuntu.com/14.04.2/ubuntu-14.04.2-server-amd64.iso',
+#  zone          => 'TESTZONE1',
+#  bootable      => true,
+#  extractable   => false,
+#  featured      => true,
+#  public        => true,
+#  ostype        => 'Other Linux (64-bit)',
+#}
 
+#cloudstack_configuration { 'account_JUBANOC_use.system.guest.vlans':
+#  configuration_name => 'use.system.guest.vlans',
+#  value              => 'false',
+#  account            => 'JUBANOC',
+#}
+#
+#cloudstack_configuration { 'account_JUBANOC_use.system.public.ips':
+#  configuration_name => 'use.system.public.ips',
+#  value              => 'false',
+#  account            => 'JUBANOC',
+#}
+#
+#cloudstack_configuration { 'cluster_TESTCLUSTER1_cpu.overprovisioning.factor':
+#  configuration_name => 'cpu.overprovisioning.factor',
+#  value              => '4.0',
+#  cluster            => 'TESTCLUSTER1',
+#}
+#
+##cloudstack_configuration { 'storagepool_TEST-Xen-LOCAL_storage.overprovisioning.factor':
+##  configuration_name => 'storage.overprovisioning.factor',
+##  value              => '1.0',
+##  storage            => 'TEST-Xen-LOCAL',
+##}
+#
+#cloudstack_configuration { 'zone_TESTZONE1_guest.domain.suffix':
+#  configuration_name => 'guest.domain.suffix',
+#  value              => 'zone1.rcswimax.com',
+#  zone               => 'TESTZONE1',
+#}
+#
+#cloudstack_configuration { 'global_max.account.primary.storage':
+#  configuration_name => 'max.account.primary.storage',   # DEFAULTS - BEFORE ACCOUNT CREATION !!!
+#  value              => '1000',
+#}
 
-# TODO - Week 20 !
-  # ATTACH volume to VM
-
-  # ISO           (1)
-  # Template      (2)
-  # Snapshot      (3)
-  # Configuration (4)
+#cloudstack_resource_limit { 'ip_JUBANOC@RCS':
+#  type    => ip,
+#  account => 'JUBANOC',
+#  domain  => 'RCS',
+#  max     => '32',
+#}

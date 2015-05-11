@@ -18,7 +18,7 @@ class cloudstack::config::cloudstack inherits ::cloudstack {
   Class['cloudstack::config::cloudstack::mysql'] ->
   exec { 'Configure Cloudstack':
     command     => '/usr/bin/cloudstack-setup-management',
-    subscribe   => Package[$::cloudstack::cloudstack_mgmt_package_name],
+    subscribe   => Exec['Setup Cloudstack with MySQL database'],
     refreshonly => true,
   }
 
@@ -59,7 +59,7 @@ class cloudstack::config::cloudstack inherits ::cloudstack {
     ->
     exec { 'Install System VM templates':
       command     => "/bin/sh ${::cloudstack::create_sys_tpl_path}",
-      subscribe   => Package[$::cloudstack::cloudstack_mgmt_package_name],
+      subscribe   => Exec['Setup Cloudstack with MySQL database'],
       refreshonly => true,
       timeout     => 3600,
     }
