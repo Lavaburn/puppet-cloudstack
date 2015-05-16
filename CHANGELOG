@@ -15,3 +15,16 @@
  - Config NFS
  - Install/Config Cloudstack
  
+ ## 2015-05-16 Release 0.3.0
+ ### Summary:
+  Fixed some bugs which reset the database after package upgrade.
+  Added many custom types which call the REST API to configure Cloudstack.
+ 
+ ### Features:
+ - Config MySQL
+ - Config NFS
+ - Install/Config Cloudstack
+ - Setup Cloudstack with Authentication, Infrastructure settings, Provision ISOs, Offerings, Virtual Machines, ...
+   MISSING: projects, regions, templates, and some more advanced networking (VPC, ACL, Security Group, Load Balancer) 
+ 
+ 

@@ -5,13 +5,41 @@
   "license": "Apache License 2.0",
   "project_page": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack",
   "summary": "Puppet module for managing Apache Cloudstack",
-  "dependencies": [
-    {"name":"puppetlabs/stdlib"},
-    {"name":"puppetlabs/apt"},
-    {"name":"puppetlabs/mysql"},
-    {"name":"puppetlabs/wget"},
-    {"name":"puppetlabs/concat"},
-    {"name":"haraldsk/nfs"}
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    }
   ],
-  "source": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack"
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=4.3.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">=1.7.0"     
+    },
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": ">=2.3.0"   
+    },
+    {
+      "name": "puppetlabs/wget",
+      "version_requirement": ">=1.5.0"   
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">=1.1.0"   
+    },
+  ],
+  "source": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack",
+  "issues_url": "TODO",
+  "tags": [
+    "cloudstack",
+    "cloud"
+  ]
 }

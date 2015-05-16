@@ -10,8 +10,8 @@ class cloudstack::cloudmonkey inherits ::cloudstack {
 #		   pip => true,
 #		 }
 
-	python::pip { 'cloudmonkey' :
-	  pkgname       => 'cloudmonkey',
-	  ensure        => 'latest',
-	 }
+  python::pip { 'cloudmonkey' :
+    ensure  => 'present',
+    pkgname => 'cloudmonkey',
+  }
 }
