@@ -92,9 +92,7 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
   def createAccount
     if @property_hash.empty?  
       Puppet.debug "Create Account "+resource[:name]
-        
-      domain = getDomain(resource[:domain])
-                    
+                
       params = {         
         :account        => resource[:name],   
         :accounttype    => self.class.accountTypes.key(resource["accounttype"]),
@@ -108,7 +106,8 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
           
       # Optional parameters     
       if domain != nil
-        params[:domainid] = domain["id"]
+        domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
+        params[:domainid] = domainid
       end
       
       Puppet.debug "createAccount PARAMS = "+params.inspect
@@ -150,8 +149,6 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
     end
       
     if update_account
-      domain = getDomain(resource[:domain])
-
       params = {       
         :id               => id,# Puppet links name to ID, so changing name is not possible !      
         :newname          => resource[:name],
@@ -160,7 +157,8 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
       
       # Optional parameters     
       if domain != nil
-        params[:domainid] = domain["id"]
+        domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
+        params[:domainid] = domainid
       end
       
       Puppet.debug "updateAccount PARAMS = "+params.inspect
@@ -216,19 +214,6 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
     account = self.class.getObject(name)
     
     account[:id]
-  end
-  
-  def getDomain(name)
-    params = { :name => name }
-          
-    list = self.class.get_objects(:listDomains, "domain", params)
-    if list == nil
-      return nil
-    end
-         
-    list.each do |object|    
-      return object
-    end
   end
   
   def self.accountTypes

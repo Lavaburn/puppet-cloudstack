@@ -13,18 +13,14 @@ Puppet::Type.newtype(:cloudstack_ssh_keypair) do
     desc "The account (name)"
   end
   
-  #  newproperty(:domainid) do
-  #    desc "The account domain ID"
-  #  end
-    
-  newproperty(:domain) do
+  newproperty(:domain) do   # ID
     desc "The account domain (name)"
   end
   
-  # TODO
-  #  projectid      list objects by project
-
   newparam(:publickey) do
     desc "The Public Key (string)"
   end
+  
+  # UNUSED
+    # projectid
 end

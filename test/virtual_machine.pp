@@ -11,8 +11,26 @@
 #  affinitygroups  => ['affinity1', 'affinity2']
 #}
 
-#cloudstack_ssh_keypair { 'admin-created':
+#cloudstack_ssh_keypair { 'KEY1':
 #  ensure    => 'absent',
+#}
+#
+#cloudstack_ssh_keypair { 'KEY2':
+#  ensure    => 'absent',
+#  publickey => 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZaQOkPRdC0rM30+/WSIlVK+YxSfI0fyIHM+FsXXxMzPTWWBpGcboxD4uDeZi1gpPtsl8ZYj0i/WN+nksVQQHLfd8/e2Xz9gueVECV22YhnusF1Ri+d7O14VBufJ0LBD8zzI6/2NrIp89rz0rcDED9BaANa9XL3pohdUd06tdXtFgqol9yez5H/Cu/ugdaBzGEVPadqb4G+1ZXmiefSTzEhbHT1LDKwWjtn5yyXkQpVFcGkKmDCrQoW1Z6j3SW4NsXNd4dGpVVSNa1hdlMjJPK9/KzPPgw9sPZZeWCPRlqzKHEJcAxrMArpGaYGk1guXe80Yhd7Fp6cUxbWVQOCHtD nicolas@Lava-PC',
+#}
+#
+#cloudstack_ssh_keypair { 'KEY3':
+#  ensure    => 'absent',
+#  account   => 'JUBANOC',
+#  domain    => 'RCS',
+#}
+#
+#cloudstack_ssh_keypair { 'KEY4':
+#  ensure    => 'absent',
+#  publickey => 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZaQOkPRdC0rM30+/WSIlVK+YxSfI0fyIHM+FsXXxMzPTWWBpGcboxD4uDeZi1gpPtsl8ZYj0i/WN+nksVQQHLfd8/e2Xz9gueVECV22YhnusF1Ri+d7O14VBufJ0LBD8zzI6/2NrIp89rz0rcDED9BaANa9XL3pohdUd06tdXtFgqol9yez5H/Cu/ugdaBzGEVPadqb4G+1ZXmiefSTzEhbHT1LDKwWjtn5yyXkQpVFcGkKmDCrQoW1Z6j3SW4NsXNd4dGpVVSNa1hdlMjJPK9/KzPPgw9sPZZeWCPRlqzKHEJcAxrMArpGaYGk1guXe80Yhd7Fp6cUxbWVQOCHtD nicolas@Lava-PC',
+#  account   => 'JUBANOC',
+#  domain    => 'RCS',
 #}
 
 #cloudstack_public_ip { 'RCS Public Services':
@@ -28,11 +46,15 @@
 #cloudstack_affinity_group { 'affinity1':
 #  ensure      => 'absent',
 #  description => 'First Affinity',
+#  account     => 'JUBANOC',
+#  domain      => 'RCS',
 #}
 
 #cloudstack_affinity_group { 'affinity2':
 #  ensure      => 'absent',
 #  description => 'Second Affinity',
+##  account     => 'JUBANOC',
+##  domain      => 'RCS',
 #}
 
 #cloudstack_firewall_rule { '0.0.0.0/0_105.235.209.21_tcp_1':
@@ -78,14 +100,14 @@
 #  zone        => 'TESTZONE1',
 #  pod         => 'TESTPOD1',
 #}
-
+#
 #cloudstack_domain { 'RCS':
-#  ensure        => present,
+#  ensure        => absent,
 #  networkdomain => 'rcswimax.com',
 #}
 #
 #cloudstack_account { 'JUBANOC':
-#  ensure        => enabled,
+#  ensure        => absent,
 #  accounttype   => 'domain-admin',  # admin is only possible in ROOT domain ?
 #  domain        => 'RCS',
 #  networkdomain => 'juba.rcswimax.com',

@@ -21,12 +21,8 @@ Puppet::Type.newtype(:cloudstack_affinity_group) do
   newproperty(:account) do
     desc "The account (name)"
   end
-  
-  #  newproperty(:domainid) do
-  #    desc "The account domain ID"
-  #  end
     
-  newproperty(:domain) do
+  newproperty(:domain) do   # ID
     desc "The account domain (name)"
   end
 end

@@ -20,7 +20,7 @@ Puppet::Type.type(:cloudstack_affinity_group).provide :rest, :parent => Puppet::
   end  
 
   def self.instances   
-    list = get_objects(:listAffinityGroups, "affinitygroup")    
+    list = get_objects(:listAffinityGroups, "affinitygroup", { :listall => true })    
     if list == nil
       return Array.new
     end
@@ -31,8 +31,8 @@ Puppet::Type.type(:cloudstack_affinity_group).provide :rest, :parent => Puppet::
         :name        => object["name"],
         :description => object["description"],
         :type        => object["type"],
-        #:account     => object["account"],
-        #:domain      => object["domain"],
+        :account     => object["account"],
+        :domain      => object["domain"],
         :ensure      => :present
       }
       if map != nil
@@ -48,14 +48,19 @@ Puppet::Type.type(:cloudstack_affinity_group).provide :rest, :parent => Puppet::
   private
   def createAffinityGroup  
     Puppet.debug "Creating Affinity Group "+resource["name"]
-      
+            
     params = { 
       :name        => resource[:name],
       :description => resource[:description],
       :type        => resource[:type],
-      #:account     => resource[:account],
-      #:domainid      => resource[:domain],#CONVERT
     }
+    
+    if resource[:account] != nil
+      domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
+      params[:account] = resource[:account]
+      params[:domainid] = domainid
+    end
+    
     response = self.class.http_get('createAffinityGroup', params)
     self.class.wait_for_async_call(response["jobid"])
   end
@@ -66,6 +71,13 @@ Puppet::Type.type(:cloudstack_affinity_group).provide :rest, :parent => Puppet::
     params = { 
       :name        => resource[:name],
     }
+    
+    if resource[:account] != nil
+      domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
+      params[:account] = resource[:account]
+      params[:domainid] = domainid
+    end
+    
     response = self.class.http_get('deleteAffinityGroup', params)
     self.class.wait_for_async_call(response["jobid"])    
   end
