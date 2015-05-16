@@ -1,10 +1,12 @@
 {
-  "name": "lavaburn-cloudstack",
-  "version": "0.2.0",
+  "name": "Lavaburn-cloudstack",
+  "version": "0.3.0",
+  "summary": "Puppet module for managing Apache Cloudstack",
   "author": "Nicolas Truyens",
   "license": "Apache License 2.0",
-  "project_page": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack",
-  "summary": "Puppet module for managing Apache Cloudstack",
+  "project_page": "https://github.com/Lavaburn/puppet-cloudstack",
+  "source": "https://github.com/Lavaburn/puppet-cloudstack",
+  "issues_url": "https://github.com/Lavaburn/puppet-cloudstack/issues",
   "operatingsystem_support": [
     {
       "operatingsystem": "Ubuntu",
@@ -21,23 +23,21 @@
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">=1.7.0"     
+      "version_requirement": ">=1.7.0"
     },
     {
       "name": "puppetlabs/mysql",
-      "version_requirement": ">=2.3.0"   
+      "version_requirement": ">=2.3.0"
     },
     {
       "name": "puppetlabs/wget",
-      "version_requirement": ">=1.5.0"   
+      "version_requirement": ">=1.5.0"
     },
     {
       "name": "puppetlabs/concat",
-      "version_requirement": ">=1.1.0"   
-    },
+      "version_requirement": ">=1.1.0"
+    }
   ],
-  "source": "https://bitbucket.org/Lavaburn/lavaburn-cloudstack",
-  "issues_url": "TODO",
   "tags": [
     "cloudstack",
     "cloud"

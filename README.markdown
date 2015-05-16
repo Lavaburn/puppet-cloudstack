@@ -13,6 +13,7 @@
 ##Overview
 
 This module installs and sets up Apache Cloudstack for first use.
+It also contains custom types to manage Cloudstack using the REST API
    
 
 ##Dependencies
@@ -127,11 +128,12 @@ Also see the examples/profile.pp file for an example on how to set up dependenci
 
 You should only use the 'cloudstack' class.
 
+There are many custom types available. Documentation Pending (automatic RDOC?)
+
 ##Compatibility
 
 This module has been tested with:
 - Puppet 3.7.3 - Ruby 1.9.3 - Ubuntu 14.04.1
-- Puppet 3.7.3 - Ruby 1.8.7 - CentOS 6.3
 
 ##Testing
 
