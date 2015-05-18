@@ -87,7 +87,7 @@ Puppet::Type.type(:cloudstack_network_offering).provide :rest, :parent => Puppet
           newSet["provider"] = serviceMap["provider"]
           services.push newSet
         end
-      end
+      end   # TODO ORDER BY NAME ?? => MAKE SURE IT MATCHES ORIGINAL... (VERY COMPLEX?)
                     
       {
         :id                   => object["id"],

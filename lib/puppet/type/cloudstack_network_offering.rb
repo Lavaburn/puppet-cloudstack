@@ -95,7 +95,7 @@ Puppet::Type.newtype(:cloudstack_network_offering) do
     defaultto "System Offering for Software"
   end 
   
-  newproperty(:service, :array_matching => :all) do
+  newparam(:service, :array_matching => :all) do    # TODO Change back to property when comparison is good...
     desc "The supported services. Array of Hashes! name, provider. Provider = array of hash! name."
     # eg. "service" => [ {"name"=>"Dns", "provider"=>[{"name"=>"VirtualRouter"}]}, ]
   end 
