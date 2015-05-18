@@ -97,8 +97,11 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
         :zoneid             => zoneid,           
         :isolationmethods   => resource[:isolationmethods],   
         :vlan               => resource[:vlan],   
-        :tags               => resource[:tags].join(","), 
       }
+      
+      if resource[:tags] != nil
+        params[:tags] = resource[:tags].join(",")
+      end
       
       if resource[:domain] != nil
         domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')
@@ -124,7 +127,7 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
       :id => id,
     }
     Puppet.debug "deletePhysicalNetwork PARAMS = "+params.inspect
-#    response = self.class.http_get('deletePhysicalNetwork', params)           
+#    response = self.class.http_get('deletePhysicalNetwork', params)           # TODO !!
     
 #    self.class.wait_for_async_call(response["jobid"])
   end
@@ -136,11 +139,15 @@ Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet
             
     if resource[:tags] != currentObject[:tags] or resource[:vlan] != currentObject[:vlan]
       id = lookupId
-      params = { 
-        :id      => id,   
-        :vlan    => resource[:vlan],    
-        :tags    => resource[:tags].join(","),  
+      params = {
+        :id      => id,
+        :vlan    => resource[:vlan],
       }
+      
+      if resource[:tags] != nil
+        params[:tags] = resource[:tags].join(",")
+      end
+      
       Puppet.debug "updatePhysicalNetwork PARAMS = "+params.inspect
       response = self.class.http_get('updatePhysicalNetwork', params)    
      
