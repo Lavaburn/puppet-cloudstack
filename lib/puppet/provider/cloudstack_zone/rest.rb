@@ -73,9 +73,14 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
       :dns2             => resource[:dns2],   
       :internaldns1     => resource[:internaldns1],   
       :internaldns2     => resource[:internaldns2],   
-      :domain           => resource[:networkdomain],
       :guestcidraddress => resource[:guestcidraddress],   
     }
+    
+    # Optional parameters     
+    if resource[:networkdomain] != nil
+      params[:domain] = resource[:networkdomain]
+    end
+    
     #Puppet.debug "createZone PARAMS = "+params.inspect
     response = self.class.http_get('createZone', params)
   end
@@ -109,9 +114,14 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
       :dns2             => resource[:dns2],   
       :internaldns1     => resource[:internaldns1],   
       :internaldns2     => resource[:internaldns2],   
-      :domain           => resource[:networkdomain],
       :guestcidraddress => resource[:guestcidraddress], 
     }
+    
+    # Optional parameters     
+    if resource[:networkdomain] != nil
+      params[:domain] = resource[:networkdomain]
+    end
+    
     #Puppet.debug "updateZone PARAMS = "+params.inspect
     response = self.class.http_get('updateZone', params)    
   end  

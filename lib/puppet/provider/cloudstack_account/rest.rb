@@ -96,7 +96,6 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
       params = {         
         :account        => resource[:name],   
         :accounttype    => self.class.accountTypes.key(resource["accounttype"]),
-        :networkdomain  => resource[:networkdomain],  
         :username       => resource[:username],  
         :firstname      => resource[:firstname],   
         :lastname       => resource[:lastname],   
@@ -105,6 +104,10 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
       }
           
       # Optional parameters     
+      if resource[:networkdomain] != nil
+        params[:networkdomain] = resource[:networkdomain]
+      end
+    
       if domain != nil
         domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
         params[:domainid] = domainid
@@ -152,10 +155,13 @@ Puppet::Type.type(:cloudstack_account).provide :rest, :parent => Puppet::Provide
       params = {       
         :id               => id,# Puppet links name to ID, so changing name is not possible !      
         :newname          => resource[:name],
-        :networkdomain    => resource[:networkdomain],         
       }
       
       # Optional parameters     
+      if resource[:networkdomain] != nil
+        params[:networkdomain] = resource[:networkdomain]
+      end
+            
       if domain != nil
         domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')   
         params[:domainid] = domainid
