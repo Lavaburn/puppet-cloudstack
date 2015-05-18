@@ -78,7 +78,19 @@ Puppet::Type.type(:cloudstack_network_offering).provide :rest, :parent => Puppet
   
       params = { :id => object['serviceofferingid'] }
       serviceoffering = getServiceOffering(params)
-              
+      
+      services = Array.new
+      if object["service"] != nil
+        object["service"].each do |serviceMap|
+          newSet = Hash.new
+          serviceMap.each do |k, v|
+            newSet["name"] = v["name"]
+            newSet["provider"] = v["provider"]
+          end
+          services.push newSet
+        end
+      end
+                    
       {
         :id                   => object["id"],
         :name                 => object["name"],   
@@ -91,7 +103,7 @@ Puppet::Type.type(:cloudstack_network_offering).provide :rest, :parent => Puppet
         :specifyipranges      => object["specifyipranges"],            
         :egressdefaultpolicy  => object["egressdefaultpolicy"],          
         :serviceoffering      => serviceoffering["name"],        
-        :service              => object["service"],
+        :service              => services,
         :tags                 => tags,  
         :state                => object["state"].downcase,
         :ensure               => :present
