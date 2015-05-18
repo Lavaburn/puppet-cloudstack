@@ -83,10 +83,8 @@ Puppet::Type.type(:cloudstack_network_offering).provide :rest, :parent => Puppet
       if object["service"] != nil
         object["service"].each do |serviceMap|
           newSet = Hash.new
-          serviceMap.each do |k, v|
-            newSet["name"] = v["name"]
-            newSet["provider"] = v["provider"]
-          end
+          newSet["name"] = serviceMap["name"]
+          newSet["provider"] = serviceMap["provider"]
           services.push newSet
         end
       end
