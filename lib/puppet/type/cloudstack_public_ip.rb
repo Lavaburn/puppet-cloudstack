@@ -5,7 +5,7 @@ Puppet::Type.newtype(:cloudstack_public_ip) do
 
   ensurable
         
-  newparam(:name, :namevar => true) do
+  newparam(:name, :namevar => true) do    # ID
     desc "The associated network (name)"
   end
   
@@ -13,15 +13,6 @@ Puppet::Type.newtype(:cloudstack_public_ip) do
     desc "The amount of Public IPs you want allocated to the network"
   end
   
-  newparam(:networkid) do
-    desc "The associated network id"
-  end
-  
-  newparam(:iplist) do
-    desc "The public IP list"
-  end
-  
-#  newparam(:zoneid) do
-#    desc "The zone id"
-#  end
+# account / domainid / projectid
+# zoneid
 end

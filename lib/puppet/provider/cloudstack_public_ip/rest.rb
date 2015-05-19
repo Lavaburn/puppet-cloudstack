@@ -15,32 +15,24 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
     require_public_ips(resource[:count]) 
   end  
 
-  def self.instances   
+  def self.instances 
+    result = Array.new
+     
     list = get_objects(:listNetworks, "network")    
-    if list == nil
-      return Array.new
-    end
-    list.collect do |object|      
-      new(getPublicIp(object["name"]))
-    end
-  end
+    if list != nil      
+      list.each do |object|      
+        result.push new(getPublicIp(object["name"]))
+      end
+    end    
     
-  def self.getNetwork(name)       
-    params = { :name => name }
-    list = get_objects(:listNetworks, "network", params)    
-    if list == nil
-      raise "No network found with name "+name
-    end
-    list.collect do |object|
-      return object
-    end
+    return result
   end
-    
+        
   def self.getPublicIp(networkName)
-    network = getNetwork(networkName)
+    networkId = genericLookup(:listNetworks, 'network', 'name', networkName, {}, 'id')
     
     count = 0
-    params = { :associatednetworkname => network["id"] }
+    params = { :associatednetworkname => networkId }
     list = get_objects(:listPublicIpAddresses, "publicipaddress", params)    
     if list != nil
       list.collect do |o|    
@@ -50,8 +42,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
     
     {
       :name      => networkName,
-      :networkid => network["id"],
-      #:zoneid    => network["zoneid"],
+      # :networkid => networkId,
       :iplist    => list,
       :count     => count.to_s,
       :ensure    => :present
@@ -61,7 +52,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
   # TYPE SPECIFIC      
   private
   def require_public_ips(required)  
-    currentObject = self.class.getPublicIp(@property_hash[:network])
+    currentObject = self.class.getPublicIp(@property_hash[:name])
     currentCount = currentObject[:count].to_i
       
     if required.is_a? String
@@ -71,10 +62,10 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
     end
            
     Puppet.debug "Network #{resource[:name]} requires #{requiredCount.to_s} public IPs and currently has #{currentCount.to_s}"
+    networkId = genericLookup(:listNetworks, 'network', 'name', @property_hash[:name], {}, 'id')
     
     if requiredCount > currentCount
-      #params = { :networkid => currentObject["networkid"], :zoneid => currentObject[:zoneid] }
-      params = { :networkid => currentObject[:networkid] }
+      params = { :networkid => networkId }
       add = requiredCount - currentCount
       
       for i in 1..add
@@ -102,7 +93,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
         
         i = 0
         possibleRemovals.collect do |ip|          
-          params = { :id => ip['id']}            
+          params = { :id => ip['id'] }            
           response = self.class.http_get('disassociateIpAddress', params)
           self.class.wait_for_async_call(response["jobid"])
           
