@@ -172,8 +172,7 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
   end
   
   def lookupId
-    zone = self.class.getObject(resource[:name])
-    
+    zone = self.class.getObject(resource[:name])    
     zone[:id]
   end
 end

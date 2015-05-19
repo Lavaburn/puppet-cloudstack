@@ -86,8 +86,6 @@ Puppet::Type.type(:cloudstack_network).provide :rest, :parent => Puppet::Provide
       :networkofferingid  => networkofferingid,        
       :zoneid             => zoneid,        
       :vlan               => resource[:vlan],  
-      :startip            => resource[:startip],  
-      :endip              => resource[:endip],  
       :netmask            => resource[:netmask],  
       :gateway            => resource[:gateway],        
       :networkdomain      => resource[:networkdomain],
@@ -104,7 +102,12 @@ Puppet::Type.type(:cloudstack_network).provide :rest, :parent => Puppet::Provide
       physicalnetworkid = self.class.genericLookup(:listPhysicalNetworks, "physicalnetwork", 'name', resource[:physicalnetwork], {}, 'id')
       params[:physicalnetworkid] = physicalnetworkid
     end
-            
+    
+    if resource[:startip] != nil
+      params[:startip] = resource[:startip] 
+      params[:endip] = resource[:endip]
+    end
+                
     Puppet.debug "createNetwork PARAMS = "+params.inspect
     response = self.class.http_get('createNetwork', params)
   end
