@@ -33,9 +33,9 @@
 #  domain    => 'RCS',
 #}
 
-#cloudstack_public_ip { 'RCS Public Services':
-#  ensure  => 'present',
-#  count   => '3'
+#cloudstack_public_ip { 'RCS Services':
+#  ensure  => 'absent',
+#  count   => '1'
 #}
 
 #cloudstack_static_nat { '105.235.209.16':

@@ -12,13 +12,13 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
       required = 0
     end
     
-    require_public_ips(resource[:count]) 
+    require_public_ips(required) 
   end  
 
   def self.instances 
     result = Array.new
      
-    list = get_objects(:listNetworks, "network")    
+    list = get_objects(:listNetworks, "network", { :listall => true })    
     if list != nil      
       list.each do |object|      
         result.push new(getPublicIp(object["name"]))
@@ -29,10 +29,10 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
   end
         
   def self.getPublicIp(networkName)
-    networkId = genericLookup(:listNetworks, 'network', 'name', networkName, {}, 'id')
+    networkId = genericLookup(:listNetworks, 'network', 'name', networkName, { :listall => true }, 'id')
     
     count = 0
-    params = { :associatednetworkname => networkId }
+    params = { :associatednetworkname => networkId, :listall => true }
     list = get_objects(:listPublicIpAddresses, "publicipaddress", params)    
     if list != nil
       list.collect do |o|    
@@ -40,12 +40,17 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
       end
     end
     
+    state = :present
+    if count == 0
+      state = :absent
+    end
+    
     {
       :name      => networkName,
       # :networkid => networkId,
       :iplist    => list,
       :count     => count.to_s,
-      :ensure    => :present
+      :ensure    => state
     }
   end
   
@@ -62,7 +67,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
     end
            
     Puppet.debug "Network #{resource[:name]} requires #{requiredCount.to_s} public IPs and currently has #{currentCount.to_s}"
-    networkId = genericLookup(:listNetworks, 'network', 'name', @property_hash[:name], {}, 'id')
+    networkId = self.class.genericLookup(:listNetworks, 'network', 'name', @property_hash[:name], { :listall => true }, 'id')
     
     if requiredCount > currentCount
       params = { :networkid => networkId }
@@ -104,7 +109,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
         end
       else
         allocated = currentCount - possibleRemovals.count        
-        raise "There are #{allocated} allocated Public IPs. It is not possible to assign less IPs to network #{resource[:name]}"
+        raise "There are #{allocated} allocated (staticnat/sourcenat) Public IPs. It is not possible to assign less IPs to network #{resource[:name]}"
       end
     else      
       raise "Public IP update called even though required IPs = current IPs. Please debug the code."
