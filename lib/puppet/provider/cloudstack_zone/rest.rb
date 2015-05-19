@@ -171,7 +171,7 @@ Puppet::Type.type(:cloudstack_zone).provide :rest, :parent => Puppet::Provider::
     updateAllocationState('Enabled')  
   end
   
-  def lookupId(name) 
+  def lookupId
     zone = self.class.getObject(resource[:name])
     
     zone[:id]
