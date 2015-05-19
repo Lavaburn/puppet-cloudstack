@@ -3,7 +3,46 @@
 Puppet::Type.newtype(:cloudstack_zone) do
   @doc = "Cloudstack Zone"
 
-  ensurable
+  ensurable do
+      defaultto :present
+      
+      newvalue(:present) do
+        provider.setState(:present)      
+      end
+  
+      newvalue(:absent) do
+        provider.setState(:absent)      
+      end
+    
+      newvalue(:enabled) do
+        provider.setState(:enabled)
+      end
+      
+      newvalue(:disabled) do
+        provider.setState(:disabled)
+      end
+      
+      def insync?(is)
+        @should.each { |should| 
+          case should
+            when :present
+              return true unless [:absent].include?(is)
+            when :absent
+              return true if is == :absent
+            when :enabled
+              return false if is == :absent
+                    
+              return (provider.getState == "enabled")  
+            when :disabled
+              return false if is == :absent
+                          
+              return (provider.getState == "disabled")
+          end
+        }            
+        false   
+           
+      end
+    end
       
   newparam(:name, :namevar => true) do
     desc "The zone name"    
@@ -37,7 +76,6 @@ Puppet::Type.newtype(:cloudstack_zone) do
     desc "The CIDR for guest traffic in the zone"
   end    
   
-#  allocationstate
 #  ip6dns1
 #  ip6dns2
 #  localstorageenabled
