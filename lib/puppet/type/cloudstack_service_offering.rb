@@ -35,13 +35,15 @@ Puppet::Type.newtype(:cloudstack_service_offering) do
     defaultto "local"
   end  
   
+  # TODO RENAME (storagetags)
   newproperty(:tags, :array_matching => :all) do
-    desc "The storage tags (???)"
+    desc "The storage tags"
   end  
 
-  newproperty(:hosttags, :array_matching => :all) do
-    desc "The host tags (???)"
-  end  
+# BROKEN FEATURE?? REQUIRES EXTENSIVE TESTING - 
+#  newproperty(:hosttags, :array_matching => :all) do
+#    desc "The host tags"
+#  end  
 
   newproperty(:systemvm) do
     desc "The System VM Type (false, domainrouter, consoleproxy, secondarystoragevm) [false if not a system offering]"

@@ -74,7 +74,7 @@ Puppet::Type.type(:cloudstack_service_offering).provide :rest, :parent => Puppet
       end
       
       tags = convertCSVtoArray(object["tags"])
-      hosttags = convertCSVtoArray(object["hosttags"])
+      #hosttags = convertCSVtoArray(object["hosttags"])
                       
       {
         :id          => object["id"],
@@ -86,7 +86,7 @@ Puppet::Type.type(:cloudstack_service_offering).provide :rest, :parent => Puppet
         :offerha     => object["offerha"],   
         :storagetype => object["storagetype"],     
         :tags        => tags,   
-        :hosttags    => hosttags,   
+        #:hosttags    => hosttags,   
         :systemvm    => systemvm,   
         :ensure      => :present
       }
@@ -107,7 +107,7 @@ Puppet::Type.type(:cloudstack_service_offering).provide :rest, :parent => Puppet
       :offerha      => resource[:offerha],   
       :storagetype  => resource[:storagetype],
       :tags         => resource[:tags].join(","),  
-      :hosttags     => resource[:hosttags].join(","),  
+      #:hosttags     => resource[:hosttags].join(","),  
     }
     
     # Variable parameters     
