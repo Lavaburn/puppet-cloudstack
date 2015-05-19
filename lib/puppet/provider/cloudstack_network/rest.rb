@@ -16,21 +16,18 @@ Puppet::Type.type(:cloudstack_network).provide :rest, :parent => Puppet::Provide
       return
     end 
     
-    # TODO enable/disable ?
-
     updateNetwork
   end  
 
   def self.instances
     result = Array.new  
     
-    list = get_objects(:listNetworks, "network")
+    list = get_objects(:listNetworks, "network", { :listall => true })
     if list != nil
       list.each do |object|    
-Puppet.debug "DEBUG Network [RAW]: "+object.inspect
         map = getNetwork(object)
         if map != nil
-          Puppet.debug "Network: "+map.inspect
+          Puppet.debug "Network Found: "+map.inspect
           result.push(new(map))
         end
       end   
@@ -39,53 +36,40 @@ Puppet.debug "DEBUG Network [RAW]: "+object.inspect
     result 
   end
   
-#  def self.getObject(name) 
-#    params = { :name => name }
-#    get_objects(:listNetworks, "network", params).collect do |object|    
-#      return getNetwork(object)
-#    end
-#  end
-#    
-  def self.getNetwork(object) 
-#    tags = convertCSVtoArray(object["tags"])
-#      
-#    zone = self.class.genericLookup(:listZones, 'zone', 'id', object["zoneid"], {}, 'name')
-#    domain = self.class.genericLookup(:listDomains, 'domain', 'id', object["domainid"], {}, 'name') unless object["domainid"] == nil
-#    
-#    if object["name"] != nil  
-#      {
-#        :id               => object["id"],
-#        :name             => object["name"],   
-#        :zoneid           => object["zoneid"],
-#        :zone             => zone, 
-#        :domainid         => object["domainid"],
-#        :domain           => domain,  
-#        :isolationmethods => object["isolationmethods"],
-#        :vlan             => object["vlan"], 
-#        :tags             => tags,
-  
-            
-            #  newparam(:name, :namevar => true) do
-            #  newproperty(:displaytext) do
-            #  newproperty(:networkoffering) do  # ID
-            #  newproperty(:zone) do  # ID
-            #  newproperty(:physicalnetwork) do  # ID
-            #  newproperty(:vlan) do
-            #  newproperty(:startip) do
-            #  newproperty(:endip) do
-            #  newproperty(:netmask) do
-            #  newproperty(:gateway) do
-            #  newproperty(:account) do
-            #  newproperty(:domain) do # ID
-            #  newproperty(:networkdomain) do
-  
-  
-  
-#        :ensure           => :present
-#      }
-#    end
-      
-    return {}   # TODO REMOVE !!
+  def self.getObject(name) 
+    params = { :listall => true, :name => name }
+    get_objects(:listNetworks, "network", params).each do |object|    
+      return getNetwork(object)
+    end
+  end
+    
+  def self.getNetwork(object)             
+    physicalnetwork = nil  
+    if object["physicalnetworkid"] != nil
+      physicalnetwork = genericLookup(:listPhysicalNetworks, "physicalnetwork", 'id', object["physicalnetworkid"], {}, 'name')
+    end
+    
+    if object["name"] != nil  
+      {
+        :id               => object["id"],
+        :name             => object["name"],   
+        :displaytext      => object["displaytext"],   
+        :gateway          => object["gateway"],   
+        :netmask          => object["netmask"],            
+        :networkoffering  => object["networkofferingname"], 
+        :zone             => object["zonename"],
+        :physicalnetwork  => physicalnetwork,
+        :vlan             => object["vlan"],  
+        #:startip          => object[""],  
+        #:endip            => object[""],  
+        :account          => object["account"],
+        :domain           => object["domain"],
+        :networkdomain    => object["networkdomain"],    
+        :tags             => object["tags"],
+        :state            => object["state"].downcase, # "Setup"
+        :ensure           => :present
+      }
+    end
   end
   
   # TYPE SPECIFIC      
@@ -94,7 +78,7 @@ Puppet.debug "DEBUG Network [RAW]: "+object.inspect
     Puppet.debug "Create Network "+resource[:name]
  
     zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')
-    networkofferingid = self.class.genericLookup(:listNetworkOfferings, "networkoffering", 'name', resource[:networkoffering], {}, 'id')
+    networkofferingid = self.class.genericLookup(:listNetworkOfferings, "networkoffering", 'name', resource[:networkoffering], { :listall => true }, 'id')
       
     params = {         
       :name               => resource[:name],   
@@ -128,39 +112,51 @@ Puppet.debug "DEBUG Network [RAW]: "+object.inspect
   def deleteNetwork
     Puppet.debug "Delete Network "+resource[:name]
       
-#    id = lookupId
-#     
-#    params = { 
-#      :id => id,
-#    }
-#    Puppet.debug "deleteNetwork PARAMS = "+params.inspect
-#    response = self.class.http_get('deleteNetwork', params)           
-    
-#    self.class.wait_for_async_call(response["jobid"])
+    id = lookupId
+     
+    params = { 
+      :id => id,
+    }
+    Puppet.debug "deleteNetwork PARAMS = "+params.inspect
+    response = self.class.http_get('deleteNetwork', params)
+    self.class.wait_for_async_call(response["jobid"])
   end
   
   def updateNetwork
     Puppet.debug "Update Network "+resource[:name]
       
-#    currentObject = self.class.getObject(@property_hash[:name])
-#            
-#    if resource[:tags] != currentObject[:tags] or resource[:vlan] != currentObject[:vlan]
-#      id = lookupId
-#      params = { 
-#        :id      => id,   
-#        :vlan    =>  resource[:vlan],    
-#        :tags    => resource[:tags].join(","),  
-#      }
-#      Puppet.debug "updateNetwork PARAMS = "+params.inspect
-##      response = self.class.http_get('updateNetwork', params)    
-#     
-##      self.class.wait_for_async_call(response["jobid"])
-#    else 
-#      raise "Only tags and vlan can be updated for Network !!!"  
-#    end
+    currentObject = self.class.getObject(@property_hash[:name])
+      
+    update = false
+    if resource[:displaytext] != currentObject[:displaytext]
+      update = true
+    end
+    if resource[:networkdomain] != currentObject[:networkdomain]
+      update = true
+    end
+    if resource[:networkoffering] != currentObject[:networkoffering]
+      update = true
+    end
+        
+    if update
+      id = lookupId
+      networkofferingid = self.class.genericLookup(:listNetworkOfferings, "networkoffering", 'name', resource[:networkoffering], { :listall => true }, 'id')
+      
+      params = { 
+        :id      => id,   
+        :displaytext        =>  resource[:displaytext],    
+        :networkdomain      => resource[:networkdomain],  
+        :networkofferingid  => networkofferingid,          
+      }
+      Puppet.debug "updateNetwork PARAMS = "+params.inspect
+      response = self.class.http_get('updateNetwork', params)    
+      self.class.wait_for_async_call(response["jobid"])
+    else 
+      raise "On Guest Network, the API only allows updating of: displaytext, networkdomain, networkoffering !"  
+    end
   end  
   
-#  def lookupId 
-#    return self.class.genericLookup(:listNetworks, 'network', 'name', resource[:name], {}, 'id')    # NAME IS NOT ID !!!
-#  end
+  def lookupId
+    return self.class.genericLookup(:listNetworks, 'network', 'name', resource[:name], { :listall => true }, 'id')
+  end
 end

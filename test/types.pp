@@ -344,20 +344,20 @@
 #  service_provider => 'VirtualRouter',
 #}
 
-#cloudstack_network { 'guest1':
-#  ensure           => present,
-#  displaytext      => 'Guest Network #1',
-#  networkoffering  => 'FullFeature_TEST',       # Type = Shared defined in this offering - Needs to support Dhcp
-#  zone             => 'TESTZONE1',
-#  # physicalnetwork  => 'TEST_PHY_NET1',        # Only for type = Shared !!
-#  vlan             => '3041',
-#  startip          => '172.20.151.10',
-#  endip            => '172.20.151.100',
+#cloudstack_network { 'TEST1':
+#  ensure           => absent,
+#  displaytext      => 'API TEST Network #1',
+#  networkoffering  => 'RCS_Juba_Network_Full_Feature',       # Type = Shared defined in this offering - Needs to support Dhcp
+#  zone             => 'Juba-TWR1',
+#  # physicalnetwork  => '',                                   # Only for type = Shared !!
+#  vlan             => '3152',
+##  startip          => '172.20.112.10',    # TODO UNUSED for Isolated ??
+##  endip            => '172.20.112.100',   # TODO UNUSED for Isolated ??
 #  netmask          => '255.255.255.0',
-#  gateway          => '172.20.151.1',
+#  gateway          => '172.20.112.1',
 #  account          => 'JUBANOC',
 #  domain           => 'RCS',
-#  networkdomain    => 'juba.rcswimax.com',
+#  networkdomain    => 'test1.twr1.rcswimax.com',
 #}
 
 #cloudstack_guest_vlan { '3032-3033':    # Fits in range set on Physical Network !!
