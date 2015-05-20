@@ -20,7 +20,7 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
   end  
 
   def self.instances
-    list = get_objects(:listVirtualMachines, "virtualmachine")
+    list = get_objects(:listVirtualMachines, "virtualmachine", { :listall => true })
     if list == nil
       return Array.new
     end   
@@ -89,7 +89,7 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
   end
   
   def getVirtualMachine(name)
-    params = { :name  => name }
+    params = { :name  => name, :listall => true }
     list = self.class.get_objects(:listVirtualMachines, "virtualmachine", params)
     if list != nil
       list.each do |object|
