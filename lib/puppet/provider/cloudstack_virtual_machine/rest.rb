@@ -29,24 +29,38 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
   end  
 
   def self.instances
-    get_objects(:listVirtualMachines, "virtualmachine").collect do |object|    
-      new(getVirtualMachine(object))
-    end      
+    result = Array.new
+    
+    list = get_objects(:listVirtualMachines, "virtualmachine", { :listall => true })
+    if list != nil
+      list.each do |object|    
+        result.push new(getVirtualMachine(object))
+      end      
+    end
+        
+    return result
   end
   
-  def self.getObject(id) 
-    params = { :id => id }
-    get_objects(:listVirtualMachines, "virtualmachine", params).collect do |object|    
-      return getVirtualMachine(object)
+  def self.getObject(id)     
+    params = { :listall => true, :id => id }
+    list = get_objects(:listVirtualMachines, "virtualmachine", params)
+    if list != nil    
+      list.each do |object|    
+        return getVirtualMachine(object)
+      end
     end
+    
+    raise "Could not find Virtual Machine with ID = #{id}"
   end
   
   def self.getVirtualMachine(object)
     default_network_name = nil  
-    object["nic"].collect do |nic|
-      if nic["isdefault"] 
-        default_network_name = nic["networkname"]
-      end
+    if object["nic"] != nil
+      object["nic"].each do |nic|
+        if nic["isdefault"] 
+          default_network_name = nic["networkname"]
+        end
+      end      
     end
     #Puppet.debug "NIC DEFAULT NAME = "+default_network_name.inspect
     
@@ -58,10 +72,13 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
     end
     
     affinityGroups = Array.new 
-    object["affinitygroup"].collect do |group|
-      affinityGroups.push(group["name"])
+    if object["affinitygroup"] != nil
+      object["affinitygroup"].each do |group|
+        affinityGroups.push(group["name"])
+      end      
     end
     
+    # displayname, group, haenable, hostname, project ?
     {
       :id              => object["id"],
       :name            => object["name"],
@@ -90,111 +107,27 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
   
   private
   def deploy_virtualMachine      
-    #Puppet.debug "TODO: (VM) deploy_virtualMachine? => "+@property_hash.inspect
+    #Puppet.debug "Deploying Virtual Machine "+resource[:name]
         
     if @property_hash.empty?  
       Puppet.debug "Deploying VirtualMachine #{resource[:name]}"
       
-      # Convert names to IDs
-      serviceofferingid = nil
-      zoneid = nil
-      #domainid = nil
-      templateid = nil
-      networkid = nil
-      
-      params = { "name" => resource[:serviceoffering] } 
-      list = self.class.get_objects(:listServiceOfferings, "serviceoffering", params)
-      if list != nil        
-        list.collect do |object|    
-          serviceofferingid = object["id"]
-        end
-      end
-      if serviceofferingid == nil
-        raise "Service Offering does not exist. Name = "+resource[:serviceoffering].inspect
-      end
-      
-      params = { "name" => resource[:zone] } 
-      list = self.class.get_objects(:listZones, "zone", params)
-      if list != nil        
-        list.collect do |object|    
-          zoneid = object["id"]
-        end
-      end
-      if zoneid == nil
-        raise "Zone does not exist. Name = "+resource[:zone].inspect
-      end
-            
-      #TODO ONLY FOR ROOT ADMIN ...
-#      params = { "name" => resource[:domain] } 
-#      list = self.class.get_objects(:listDomains, "domain", params)
-#      list.collect do |object|    
-#        domainid = object["id"]
-#      end
-#      if domainid == nil
-#        raise "Domain does not exist. Name = "+resource[:domain].inspect 
-#      end
-      
-      #"featured", "self", "selfexecutable","sharedexecutable","executable", and "community".                   
-      params = { "name" => resource[:template], "templatefilter" => "executable" } 
-      list = self.class.get_objects(:listTemplates, "template", params)
-      if list != nil        
-        list.collect do |object|    
-          templateid = object["id"]
-        end
-      end
-      if templateid == nil
-        raise "Template does not exist. Name = "+resource[:template].inspect
-      end
-      
-      list = self.class.get_objects(:listNetworks, "network")
-      if list != nil 
-        list.collect do |object|  
-          if resource[:default_network] == object["name"]
-            networkid = object["id"]
-          end
-        end
-      end
-      if networkid == nil
-        raise "Network does not exist. Name = "+resource[:default_network].inspect
-      end
-            
+      serviceofferingid = self.class.genericLookup(:listServiceOfferings, 'serviceoffering', 'name', resource[:serviceoffering], {}, 'id')
+      zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')
+      networkid = self.class.genericLookup(:listNetworks, 'network', 'name', resource[:default_network], {}, 'id')        
+      templateid = self.class.genericLookup(:listTemplates, 'template', 'name', resource[:template], { "templatefilter" => "all" }, 'id')  
+              
       # Required parameters
       resourceHash = {
         :name               => resource[:name],
         :keypair            => resource[:keypair],
-          
-        #TODO NOT REQUIRED BY USER LOGIN ??? :account            => resource[:account],
-        #TODO NOT REQUIRED BY USER LOGIN ??? :domainid           => domainid,
-          
         :serviceofferingid  => serviceofferingid,
         :templateid         => templateid,
         :zoneid             => zoneid,
-        :networkids         => networkid,
-          
-        
-
-        #:displayname => ???
-        #:affinitygroupids OR :affinitygroupnames => CSV
-        #:customid  =>  ROOT Admin only
-        #:deploymentplanner  =>  ROOT Admin only
-        #:details => custom parameters
-        #:diskofferingid  TPL = Template object, DATA Disk Volume; TPL = ISO object, ROOT Disk Volume        
-        #:size =>  size for the DATADISK volume. Mutually exclusive with diskOfferingId 
-        #:displayvm whether to the display the vm to the end user   
-        #:group => Group
-        #:hostid  =>  ROOT Admin only
-        #:hypervisor => required when hypervisor info is not set on the ISO/Template
-        #:ip6address => the ipv6 address
-        #:ipaddress => the ip address
-        #:iptonetworklist => Can't be specified with networkIds parameter. Example: iptonetworklist[0].ip=10.10.10.11&iptonetworklist[0].ipv6=fc00:1234:5678::abcd&iptonetworklist[0].networkid=uuid - requests to use ip 10.10.10.11 in network id=uuid 
-        #:keyboard   de,de-ch,es,fi,fr,fr-be,fr-ch,is,it,jp,nl-be,no,pt,uk,us
-        #:rootdisksize  resize root disk on deploy.
-        #:securitygroupids OR :securitygroupnames => CSV (BASIC ZONE)        
-        
-        #TODO ??? based on ensure?
-        #:startvm (DEFAULT = true)          
+        :networkids         => networkid,   
       }
-       
+      # displayname, group
+      
       # Optional parameters     
       if resource[:userdata] != nil
         resourceHash[:userdata] = Base64.encode64(resource[:userdata])
@@ -203,7 +136,13 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       if resource[:affinitygroups] != nil
         resourceHash[:affinitygroupnames] = resource[:affinitygroups].join(",")        
       end
-      
+
+      if resource[:account] != nil
+        domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')
+        resourceHash[:account] = resource[:account]    
+        resourceHash[:domainid] = domainid
+      end
+            
       #API Call
       #Puppet.debug "deployVirtualMachine PARAMS = "+resourceHash.inspect      
       response = self.class.http_get('deployVirtualMachine', resourceHash)
