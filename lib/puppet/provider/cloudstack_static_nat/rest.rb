@@ -54,13 +54,13 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
   def enable_static_nat    
     # Puppet won't allow you to reach here if IP was allocated (considering prefetch works...)
     Puppet.debug "Enable Static NAT between "+resource[:name]+" and "+resource[:virtual_machine]
-         
-    vm = getVirtualMachine(resource[:virtual_machine])
-    ip = getIpAddress(resource[:name])
-      
+               
+    virtual_machine_id = self.class.genericLookup(:listVirtualMachines, 'virtualmachine', 'name', resource[:virtual_machine], { :listall => true }, 'id')         
+    publicip_id = self.class.genericLookup(:listPublicIpAddresses, 'publicipaddress', 'ipaddress', resource[:name], { :listall => true }, 'id')   
+            
     params = { 
-      :ipaddressid      => ip["id"],
-      :virtualmachineid => vm["id"],
+      :ipaddressid      => publicip_id,
+      :virtualmachineid => virtual_machine_id,
     }
     #Puppet.debug "enableStaticNat PARAMS = "+params.inspect
     response = self.class.http_get('enableStaticNat', params)  
@@ -70,10 +70,10 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
     # Puppet won't allow you to reach here if IP was not allocated (considering prefetch works...)
     Puppet.debug "Disable Static NAT from "+resource[:name]+" (VM = "+resource[:virtual_machine]+")"
 
-    ip = getIpAddress(resource[:name])
+    publicip_id = self.class.genericLookup(:listPublicIpAddresses, 'publicipaddress', 'ipaddress', resource[:name], { :listall => true }, 'id')   
       
     params = { 
-      :ipaddressid      => ip["id"],
+      :ipaddressid      => publicip_id,
     }
     #Puppet.debug "disableStaticNat PARAMS = "+params.inspect
     response = self.class.http_get('disableStaticNat', params)      
@@ -86,29 +86,5 @@ Puppet::Type.type(:cloudstack_static_nat).provide :rest, :parent => Puppet::Prov
     disable_static_nat 
     sleep 5
     enable_static_nat
-  end
-  
-  def getVirtualMachine(name)
-    params = { :name  => name, :listall => true }
-    list = self.class.get_objects(:listVirtualMachines, "virtualmachine", params)
-    if list != nil
-      list.each do |object|
-        return object
-      end
-    end   
-        
-    raise "Could not find VirtualMachine "+name 
-  end
-  
-  def getIpAddress(ipaddress)
-    params = { :ipaddress  => ipaddress }
-    list = self.class.get_objects(:listPublicIpAddresses, "publicipaddress", params)
-    if list != nil
-      list.each do |object|
-        return object
-      end
-    end
-    
-    raise "Could not find IP Address "+ipaddress+". Use cloudstack_public_ip to allocate more IPs if required." 
   end
 end
