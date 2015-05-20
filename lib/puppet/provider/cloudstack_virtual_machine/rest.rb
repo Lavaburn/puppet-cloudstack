@@ -114,8 +114,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       
       serviceofferingid = self.class.genericLookup(:listServiceOfferings, 'serviceoffering', 'name', resource[:serviceoffering], {}, 'id')
       zoneid = self.class.genericLookup(:listZones, 'zone', 'name', resource[:zone], {}, 'id')
-      networkid = self.class.genericLookup(:listNetworks, 'network', 'name', resource[:default_network], {}, 'id')        
-      templateid = self.class.genericLookup(:listTemplates, 'template', 'name', resource[:template], { "templatefilter" => "all" }, 'id')  
+      networkid = self.class.genericLookup(:listNetworks, 'network', 'name', resource[:default_network], { :listall => true }, 'id')        
+      templateid = self.class.genericLookup(:listTemplates, 'template', 'name', resource[:template], { :templatefilter => "all" }, 'id')  
               
       # Required parameters
       resourceHash = {
