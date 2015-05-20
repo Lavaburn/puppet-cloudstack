@@ -20,7 +20,7 @@ Puppet::Type.type(:cloudstack_firewall_rule).provide :rest, :parent => Puppet::P
   end  
 
   def self.instances
-    list = get_objects(:listFirewallRules, "firewallrule")
+    list = get_objects(:listFirewallRules, "firewallrule", { :listall => true })
     if list == nil
       return Array.new
     end   
@@ -29,7 +29,7 @@ Puppet::Type.type(:cloudstack_firewall_rule).provide :rest, :parent => Puppet::P
     list.each do |object|
       map = getFirewallRule(object)
       if map != nil
-        Puppet.debug "Firewall Rules FOUND: "+map.inspect
+        #Puppet.debug "Firewall Rules FOUND: "+map.inspect
         result.push(new(map))
       end
     end
@@ -62,10 +62,10 @@ Puppet::Type.type(:cloudstack_firewall_rule).provide :rest, :parent => Puppet::P
   def create_rule    
     Puppet.debug "Creating Firewall Rule "+resource[:name]
 
-    ip = getIpAddress(resource[:publicipaddress])
+    publicip_id = self.class.genericLookup(:listPublicIpAddresses, 'publicipaddress', 'ipaddress', resource[:publicipaddress], { :listall => true }, 'id')   
       
     params = { 
-      :ipaddressid => ip["id"],
+      :ipaddressid => publicip_id,
       :cidrlist    => resource[:source],      
       :protocol    => resource[:protocol],
     }
@@ -101,31 +101,19 @@ Puppet::Type.type(:cloudstack_firewall_rule).provide :rest, :parent => Puppet::P
   end
   
   def self.getRule(source, publicipaddress, protocol, startport)
-      params = { :cidrlist => source, :ipaddress => publicipaddress, :protocol => protocol, :startport => startport }
-      if protocol == 'tcp' or protocol == 'udp' 
-        params[:startport] = startport
-      else
-        params[:icmpcode] = '-1'
-      end
-      
-      list = get_objects(:listFirewallRules, "firewallrule", params)    
-      if list == nil
-        raise "No firewall rule found"+params.inspect
-      end
-      list.collect do |object|
-        return object
-      end
-    end
-  
-  def getIpAddress(ipaddress)
-    params = { :ipaddress  => ipaddress }
-    list = self.class.get_objects(:listPublicIpAddresses, "publicipaddress", params)
-    if list != nil
-      list.each do |object|
-        return object
-      end
+    params = { :cidrlist => source, :ipaddress => publicipaddress, :protocol => protocol, :startport => startport, :listall => true }
+    if protocol == 'tcp' or protocol == 'udp' 
+      params[:startport] = startport
+    else
+      params[:icmpcode] = '-1'
     end
     
-    raise "Could not find IP Address "+ipaddress+". Use cloudstack_public_ip to allocate more IPs if required." 
+    list = get_objects(:listFirewallRules, "firewallrule", params)    
+    if list == nil
+      raise "No firewall rule found - "+params.inspect
+    end
+    list.collect do |object|
+      return object
+    end
   end
 end
