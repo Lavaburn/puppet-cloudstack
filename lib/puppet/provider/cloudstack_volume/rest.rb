@@ -145,7 +145,9 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
         #Puppet.debug "attachVolume PARAMS = "+params.inspect
         response = self.class.http_get('attachVolume', params)
         self.class.wait_for_async_call(response["jobid"])    
-      end      
+      end   
+       
+      return true      
     end
     
     return false    
