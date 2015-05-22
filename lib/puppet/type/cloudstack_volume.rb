@@ -28,6 +28,10 @@ Puppet::Type.newtype(:cloudstack_volume) do
   newproperty(:domain) do   # ID
     desc "The domain of the account that this volume belongs to"
   end 
+  
+  newproperty(:virtualmachine) do   # ID
+    desc "The virtual machine to which to attach the volume"
+  end 
     
   # UNUSED:
     # miniops - maxiops
@@ -35,5 +39,4 @@ Puppet::Type.newtype(:cloudstack_volume) do
     # displayvolume
     # customid
     # projectid
-    # virtualmachineid (snapshot only ?)
 end

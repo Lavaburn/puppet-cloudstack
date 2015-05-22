@@ -105,7 +105,7 @@ Puppet::Type.type(:cloudstack_ssh_keypair).provide :rest, :parent => Puppet::Pro
       response = self.class.http_get('createSSHKeyPair', params)    
       
       keyfile = '/root/CLOUD_backdoor_'+resource[:name]+'.pem'
-      File.open(keyfile, 'a') { |fd| 
+      File.open(keyfile, 'w') { |fd|
         fd.puts response["keypair"]["privatekey"]
       }
       File.chmod(0600, keyfile)

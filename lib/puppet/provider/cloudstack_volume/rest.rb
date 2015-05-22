@@ -16,7 +16,7 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
       return
     end 
     
-    # TODO ATTACH TO VM ??
+    return if attachVolume
 
     raise "Update volume is currently not implemented. Not much to do anyway..."
   end  
@@ -29,7 +29,7 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
       list.each do |object|
         map = getVolume(object)
         if map != nil
-          Puppet.debug "VOLUME FOUND: "+map.inspect
+          #Puppet.debug "VOLUME FOUND: "+map.inspect
           result.push(new(map))
         end
       end       
@@ -58,6 +58,7 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
         :account        => object["account"],
         :domain         => object["domain"],
         :domainid       => object["domainid"],
+        :virtualmachine => object["vmname"],
         :ensure         => :present
       }
     end
@@ -81,16 +82,21 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
     else
       params[:snapshotid] = resource[:snapshotid]
     end
-    
-    
+        
     if resource[:account] != nil
       domainid = self.class.genericLookup(:listDomains, 'domain', 'name', resource[:domain], {}, 'id')
       params[:account] = resource[:account]
       params[:domainid] = domainid
     end
     
-    Puppet.debug "createVolume PARAMS = "+params.inspect
+    if resource[:virtualmachine] != nil
+      virtualmachineid = self.class.genericLookup(:listVirtualMachines, 'virtualmachine', 'name', resource[:virtualmachine], { :listall => true }, 'id')
+      params[:virtualmachineid] = virtualmachineid
+    end
+    
+    #Puppet.debug "createVolume PARAMS = "+params.inspect
     response = self.class.http_get('createVolume', params)
+    self.class.wait_for_async_call(response["jobid"])    
   end
 
   def deleteVolume
@@ -101,9 +107,49 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
     params = { 
       :id => id,
     }
-    Puppet.debug "deleteVolume PARAMS = "+params.inspect
+    #Puppet.debug "deleteVolume PARAMS = "+params.inspect
     response = self.class.http_get('deleteVolume', params)           
   end 
+  
+  def attachVolume
+    currentObject = self.class.getObject(@property_hash[:name])
+    
+    if currentObject[:virtualmachine] != resource[:virtualmachine]      
+      if currentObject[:virtualmachine] != nil
+        Puppet.debug "Detaching Volume "+resource[:name]+" from "+currentObject[:virtualmachine] 
+          
+        id = lookupId
+        virtualmachineid = self.class.genericLookup(:listVirtualMachines, 'virtualmachine', 'name', currentObject[:virtualmachine], { :listall => true }, 'id')
+          
+        params = { 
+          :id               => id,
+          :virtualmachineid => virtualmachineid,
+        }
+         
+        #Puppet.debug "detachVolume PARAMS = "+params.inspect
+        response = self.class.http_get('detachVolume', params)
+        self.class.wait_for_async_call(response["jobid"])              
+      end
+      
+      if resource[:virtualmachine]  != nil
+        Puppet.debug "Attaching Volume "+resource[:name]+" to "+resource[:virtualmachine] 
+          
+        id = lookupId
+        virtualmachineid = self.class.genericLookup(:listVirtualMachines, 'virtualmachine', 'name', resource[:virtualmachine], { :listall => true }, 'id')
+          
+        params = { 
+          :id               => id,
+          :virtualmachineid => virtualmachineid,
+        }
+              
+        #Puppet.debug "attachVolume PARAMS = "+params.inspect
+        response = self.class.http_get('attachVolume', params)
+        self.class.wait_for_async_call(response["jobid"])    
+      end      
+    end
+    
+    return false    
+  end
   
   def lookupId
     volume = self.class.getObject(resource[:name])
