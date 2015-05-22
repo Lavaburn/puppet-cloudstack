@@ -24,7 +24,7 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
   def self.instances
     result = Array.new  
     
-    list = get_objects(:listVolumes, "volume")
+    list = get_objects(:listVolumes, "volume", { :listall => true })
     if list != nil
       list.each do |object|
         map = getVolume(object)
@@ -39,7 +39,7 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
   end
   
   def self.getObject(name) 
-    params = { :name => name }
+    params = { :name => name, :listall => true }
     get_objects(:listVolumes, "volume", params).collect do |object|    
       return getVolume(object)
     end
