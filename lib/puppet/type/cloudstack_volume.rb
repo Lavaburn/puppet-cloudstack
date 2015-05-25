@@ -32,6 +32,10 @@ Puppet::Type.newtype(:cloudstack_volume) do
   newproperty(:virtualmachine) do   # ID
     desc "The virtual machine to which to attach the volume"
   end 
+  
+  newparam(:device) do   # ID
+    desc "The device that gets mounted on the virtual machine (/dev/xvd[a-j])"
+  end 
     
   # UNUSED:
     # miniops - maxiops

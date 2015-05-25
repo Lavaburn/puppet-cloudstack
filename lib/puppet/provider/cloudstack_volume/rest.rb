@@ -141,6 +141,10 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
           :id               => id,
           :virtualmachineid => virtualmachineid,
         }
+        
+        if resource[:device] != nil
+          params[:deviceid] = self.class.volumes.key(resource[:device])
+        end
               
         #Puppet.debug "attachVolume PARAMS = "+params.inspect
         response = self.class.http_get('attachVolume', params)
@@ -157,4 +161,19 @@ Puppet::Type.type(:cloudstack_volume).provide :rest, :parent => Puppet::Provider
     volume = self.class.getObject(resource[:name])
     volume[:id]
   end    
+  
+  def self.volumes
+    {
+      0 => '/dev/xvda',
+      1 => '/dev/xvdb',
+      2 => '/dev/xvdc',
+      3 => '/dev/xvdd',
+      4 => '/dev/xvde',
+      5 => '/dev/xvdf',
+      6 => '/dev/xvdg',
+      7 => '/dev/xvdh',
+      8 => '/dev/xvdi',
+      9 => '/dev/xvdj',
+    }
+  end
 end
