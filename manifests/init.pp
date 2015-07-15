@@ -103,19 +103,19 @@ class cloudstack (
     'latest': {
       $cloudstack_major_version = '4.4'
     }
-    '/^4.0.*/': {
+    /^4.0.*/: {
       $cloudstack_major_version = '4.0'
     }
-    '/^4.1.*/': {
+    /^4.1.*/: {
       $cloudstack_major_version = '4.1'
     }
-    '/^4.2.*/': {
+    /^4.2.*/: {
       $cloudstack_major_version = '4.2'
     }
-    '/^4.3.*/': {
+    /^4.3.*/: {
       $cloudstack_major_version = '4.3'
     }
-    '/^4.4.*/': {
+    /^4.4.*/: {
       $cloudstack_major_version = '4.4'
     }
     default: {
