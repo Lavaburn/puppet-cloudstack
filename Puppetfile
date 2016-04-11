@@ -6,6 +6,7 @@ mod 'puppetlabs-apt'
 mod 'puppetlabs-mysql'
 mod 'maestrodev-wget'
 mod 'puppetlabs-concat'
+mod 'stankevich-python'
 
 # Community Git Modules
 mod 'nfs',

@@ -17,6 +17,9 @@ fixtures:
     concat:
       repo: "puppetlabs/concat"
       ref: "1.1.2"
+    python:
+      repo: "stankevich/python"
+      ref: "1.9.8"
       
   repositories:
     nfs: 
