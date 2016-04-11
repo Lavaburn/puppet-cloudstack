@@ -5,7 +5,7 @@ rescue LoadError => e
   Puppet.info "Cloudstack Puppet module requires 'rest-client' and 'json' ruby gems."
 end
 
-class Puppet::Provider::Rest < Puppet::Provider
+class Puppet::Provider::CloudstackRest < Puppet::Provider
   desc "Cloudstack API REST calls"
   
   confine :feature => :json

@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'cloudstack_rest')
 
-Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet::Provider::Rest do
+Puppet::Type.type(:cloudstack_physical_network).provide :rest, :parent => Puppet::Provider::CloudstackRest do
   desc "REST provider for Cloudstack Physical Network"
   
   mk_resource_methods

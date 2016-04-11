@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'cloudstack_rest')
 
-Puppet::Type.type(:cloudstack_resource_limit).provide :rest, :parent => Puppet::Provider::Rest do
+Puppet::Type.type(:cloudstack_resource_limit).provide :rest, :parent => Puppet::Provider::CloudstackRest do
   desc "REST provider for Cloudstack Resource Limit"
   
   mk_resource_methods

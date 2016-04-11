@@ -20,11 +20,14 @@ fixtures:
     python:
       repo: "stankevich/python"
       ref: "1.9.8"
+    nfs:
+      repo: "echocat/nfs"
+      ref: "1.8.1"
       
-  repositories:
-    nfs: 
-      repo: "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git"
-      branch: "fix_debian_service_cycle_squashed"
+#  repositories:
+#    nfs: 
+#      repo: "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git"
+#      branch: "fix_debian_service_cycle_squashed"
 
   symlinks:
     cloudstack: "#{source_dir}"

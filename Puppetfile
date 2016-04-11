@@ -7,8 +7,9 @@ mod 'puppetlabs-mysql'
 mod 'maestrodev-wget'
 mod 'puppetlabs-concat'
 mod 'stankevich-python'
+mod 'echocat-nfs'
 
 # Community Git Modules
-mod 'nfs',
-  :git => "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git", 
-  :ref => "fix_debian_service_cycle_squashed"
+#mod 'nfs',
+#  :git => "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git", 
+#  :ref => "fix_debian_service_cycle_squashed"
