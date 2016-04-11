@@ -26,11 +26,10 @@ define cloudstack::config::nfs::export (
     ensure  => 'directory',
   }
 
-  # TODO [FEATURE-REQUEST: Configure without Puppet haraldsk/nfs module]
-  # Don't use nfs::server::export ???
+  # TODO [FEATURE-REQUEST: Configure without Puppet echocat/nfs module ???]
 
   # No spaces !!!
   File[$folder] -> nfs::server::export { $folder:
-    clients => ['*(rw,async,no_root_squash,no_subtree_check)'],
+    clients => '*(rw,async,no_root_squash,no_subtree_check)',
   }
 }
