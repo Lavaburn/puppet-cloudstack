@@ -117,6 +117,4 @@ class cloudstack::params {
       }
     }
   }
-
-  # $cloudstack_agent_package_name = 'cloudstack-agent'
 }
