@@ -74,14 +74,14 @@ class cloudstack::params {
       'redhat': {
         case $::operatingsystem {
           'Fedora': {
-            if is_integer($::operatingsystemrelease) and $::operatingsystemrelease >= 19 or $::operatingsystemrelease == 'Rawhide' {
+            if versioncmp($::operatingsystemmajrelease, '19.0') >= 0 or $::operatingsystemrelease == 'Rawhide' {
               $provider = 'mariadb'
             } else {
               $provider = 'mysql'
             }
           }
           /^(RedHat|CentOS|Scientific|OracleLinux)$/: {
-            if $::operatingsystemmajrelease >= 7 {
+            if versioncmp($::operatingsystemmajrelease, '7.0') >= 0 {
               $provider = 'mariadb'
             } else {
               $provider = 'mysql'
