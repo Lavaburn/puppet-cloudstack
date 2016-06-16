@@ -86,7 +86,7 @@ class cloudstack::agent (
 
           apt::source { 'cloudstack':
             comment     => 'Official Apache repository for Cloudstack',
-            location    => $apt_repository,
+            location    => $real_cloudstack_apt_repository,
             release     => $apt_release,
             repos       => $cloudstack_major_version,
             include_src => false,
