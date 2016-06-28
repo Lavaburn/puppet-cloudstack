@@ -17,8 +17,20 @@ Puppet::Type.newtype(:cloudstack_traffic_type) do
     desc "The traffic type: Guest/Public/Storage/Management"
   end  
   
-  newproperty(:label) do 
-    desc "The label used by the hypervisor to identify the network interface"
+  newproperty(:hypervnetworklabel) do 
+    desc "The label used by HyperV to identify the network interface"
+  end  
+  
+  newproperty(:kvmnetworklabel) do 
+    desc "The label used by KVM to identify the network interface"
+  end  
+  
+  newproperty(:vmwarenetworklabel) do 
+    desc "The label used by VMWare to identify the network interface"
+  end  
+  
+  newproperty(:xennetworklabel) do 
+    desc "The label used by Xen to identify the network interface"
   end  
   
   newparam(:isolationmethod) do

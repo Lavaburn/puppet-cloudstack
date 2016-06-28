@@ -60,12 +60,15 @@ Puppet::Type.type(:cloudstack_traffic_type).provide :rest, :parent => Puppet::Pr
       physicalNetwork = genericLookup(:listPhysicalNetworks, 'physicalnetwork', 'id', object["physicalnetworkid"], {}, 'name')
         
       {
-        :id               => object["id"],
-        :name             => physicalNetwork+"_"+object["traffictype"],
-        :physicalnetwork  => physicalNetwork,
-        :traffictype      => object["traffictype"],
-        :label            => object["xennetworklabel"],
-        :ensure           => :present
+        :id                 => object["id"],
+        :name               => physicalNetwork+"_"+object["traffictype"],
+        :physicalnetwork    => physicalNetwork,
+        :traffictype        => object["traffictype"],
+        :hypervnetworklabel => object["hypervnetworklabel"],
+        :kvmnetworklabel    => object["kvmnetworklabel"],
+        :vmwarenetworklabel => object["vmwarenetworklabel"],
+        :xennetworklabel    => object["xennetworklabel"],
+        :ensure             => :present
       }
     end
   end
@@ -81,10 +84,10 @@ Puppet::Type.type(:cloudstack_traffic_type).provide :rest, :parent => Puppet::Pr
       :physicalnetworkid  => physicalnetworkid,
       :traffictype        => resource[:traffictype],   
       :isolationmethod    => resource[:isolationmethod],   
-      :hypervnetworklabel => resource[:label],    
-      :kvmnetworklabel    => resource[:label],    
-      :vmwarenetworklabel => resource[:label],    
-      :xennetworklabel    => resource[:label],
+      :hypervnetworklabel => resource[:hypervnetworklabel],    
+      :kvmnetworklabel    => resource[:kvmnetworklabel],    
+      :vmwarenetworklabel => resource[:vmwarenetworklabel],    
+      :xennetworklabel    => resource[:xennetworklabel],
     }
                 
     Puppet.debug "addTrafficType PARAMS = "+params.inspect
@@ -114,22 +117,25 @@ Puppet::Type.type(:cloudstack_traffic_type).provide :rest, :parent => Puppet::Pr
       
     currentObject = self.class.getObject(physicalnetworkid, @property_hash[:traffictype])
             
-    if resource[:label] != currentObject[:label]
+    if (resource[:hypervnetworklabel] != currentObject[:hypervnetworklabel] or 
+        resource[:kvmnetworklabel] != currentObject[:kvmnetworklabel] or
+        resource[:vmwarenetworklabel] != currentObject[:vmwarenetworklabel] or 
+        resource[:xennetworklabel] != currentObject[:xennetworklabel])
       id = lookupId
       
       params = { 
         :id                 => id,     
-        :hypervnetworklabel => resource[:label],    
-        :kvmnetworklabel    => resource[:label],    
-        :vmwarenetworklabel => resource[:label],    
-        :xennetworklabel    => resource[:label],          
+        :hypervnetworklabel => resource[:hypervnetworklabel],    
+        :kvmnetworklabel    => resource[:kvmnetworklabel],    
+        :vmwarenetworklabel => resource[:vmwarenetworklabel],    
+        :xennetworklabel    => resource[:xennetworklabel],          
       }
       Puppet.debug "updateTrafficType PARAMS = "+params.inspect
       response = self.class.http_get('updateTrafficType', params)    
      
       self.class.wait_for_async_call(response["jobid"])
     else 
-      raise "Only label can be updated for Traffic Type !!!"  
+      raise "Only labels can be updated for Traffic Type !!!"  
     end
   end  
   
