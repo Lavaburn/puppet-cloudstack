@@ -32,7 +32,7 @@ Puppet::Type.type(:cloudstack_public_ip).provide :rest, :parent => Puppet::Provi
     networkId = genericLookup(:listNetworks, 'network', 'name', networkName, { :listall => true }, 'id')
     
     count = 0
-    params = { :associatednetworkname => networkId, :listall => true }
+    params = { :associatednetworkid => networkId, :listall => true }
     list = get_objects(:listPublicIpAddresses, "publicipaddress", params)    
     if list != nil
       list.collect do |o|    
