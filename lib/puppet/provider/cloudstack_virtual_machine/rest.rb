@@ -66,8 +66,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         end
       end      
     end
-    Puppet.debug "NICs - Default: "+default_network_name.inspect
-    Puppet.debug "NICs - Extra: "+extra_networks.inspect
+#    Puppet.debug "NICs - Default: "+default_network_name.inspect
+#    Puppet.debug "NICs - Extra: "+extra_networks.inspect
     
     userdata = nil
     params = { "virtualmachineid" => object["id"] } 
@@ -102,14 +102,11 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
     }
   end
   
-  def self.getNIClist(id)
-    Puppet.debug "Getting NIC list for VM  "+id.inspect
-    
+  def self.getNIClist(id)    
     nics = Hash.new
     
     params = { :listall => true, :id => id }
     list = get_objects(:listVirtualMachines, "virtualmachine", params)
-    Puppet.debug "NIC list for VM:  "+list.inspect
     if list != nil
       list.each do |object|    
         if object["nic"] != nil
@@ -272,15 +269,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
     if resource[:extra_networks] != currentObject[:extra_networks]
       Puppet.debug "Updating Extra Networks for VirtualMachine #{resource[:name]}"
       
-#      if @property_hash[:state] != "stopped"
-#        if @property_flush[:ensure] == :stopped
-#          stop_virtualMachine
-#        else
-#          raise "A NIC can not be added/removed when the VM is running!"
-#        end
-#      end
-      
-      Puppet.debug "Checking for additional NICs"
+      nic_list = self.class.getNIClist(@property_hash[:id])
+
       additions = resource[:extra_networks] - currentObject[:extra_networks]
       additions.each do |addition|
         Puppet.debug "Extra NICs - Adding: "+addition.inspect
@@ -291,9 +281,6 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         self.class.wait_for_async_call(response["jobid"])     
       end
       
-      nic_list = self.class.getNIClist(@property_hash[:id])
-
-      Puppet.debug "Checking for obsolete NICs"
       removals = currentObject[:extra_networks] - resource[:extra_networks]
       removals.each do |removal|
         Puppet.debug "Extra NICs - Removing: "+removal.inspect
