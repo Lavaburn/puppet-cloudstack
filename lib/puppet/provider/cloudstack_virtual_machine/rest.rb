@@ -115,7 +115,7 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         if object["nic"] != nil
           object["nic"].each do |nic|        
             Puppet.debug "NIC for VM:  "+nic.inspect
-            nics[nic["network_name"]] = nic["nic_id"]
+            nics[nic["networkname"]] = nic["id"]
           end
         end         
       end
@@ -296,7 +296,7 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       Puppet.debug "Checking for obsolete NICs"
       removals = currentObject[:extra_networks] - resource[:extra_networks]
       removals.each do |removal|
-        Puppet.debug "Extra NICs - Removing: "+addition.inspect
+        Puppet.debug "Extra NICs - Removing: "+removal.inspect
         
         params = { :nicid => nic_list[removal], :virtualmachineid => @property_hash[:id] }
         response = self.class.http_get('removeNicFromVirtualMachine', params)      
