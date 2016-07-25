@@ -103,15 +103,19 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
   end
   
   def self.getNIClist(id)
+    Puppet.debug "Getting NIC list for VM  "+id.inspect
+    
     nics = Hash.new
     
     params = { :listall => true, :id => id }
     list = get_objects(:listVirtualMachines, "virtualmachine", params)
+    Puppet.debug "NIC list for VM:  "+list.inspect
     if list != nil
       list.each do |object|    
         if object["nic"] != nil
-          object["nic"].each do |nic|
-            nics[object["nic"]["network_name"]] = object["nic"]["nic_id"]
+          object["nic"].each do |nic|        
+            Puppet.debug "NIC for VM:  "+nic.inspect
+            nics[nic["network_name"]] = nic["nic_id"]
           end
         end         
       end
@@ -276,6 +280,7 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
 #        end
 #      end
       
+      Puppet.debug "Checking for additional NICs"
       additions = resource[:extra_networks] - currentObject[:extra_networks]
       additions.each do |addition|
         Puppet.debug "Extra NICs - Adding: "+addition.inspect
@@ -288,6 +293,7 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       
       nic_list = self.class.getNIClist(@property_hash[:id])
 
+      Puppet.debug "Checking for obsolete NICs"
       removals = currentObject[:extra_networks] - resource[:extra_networks]
       removals.each do |removal|
         Puppet.debug "Extra NICs - Removing: "+addition.inspect
