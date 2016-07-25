@@ -66,7 +66,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         end
       end      
     end
-    #Puppet.debug "NIC DEFAULT NAME = "+default_network_name.inspect
+    Puppet.debug "NICs - Default: "+default_network_name.inspect
+    Puppet.debug "NICs - Extra: "+extra_networks.inspect
     
     userdata = nil
     params = { "virtualmachineid" => object["id"] } 
@@ -115,6 +116,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
         end         
       end
     end
+    
+    Puppet.debug "Current NICs: "+nics.inspect
     
     nics
   end
@@ -275,6 +278,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       
       additions = resource[:extra_networks] - currentObject[:extra_networks]
       additions.each do |addition|
+        Puppet.debug "Extra NICs - Adding: "+addition.inspect
+
         networkid = self.class.genericLookup(:listNetworks, 'network', 'name', addition, { :listall => true }, 'id')  
         params = { :networkid => networkid, :virtualmachineid => @property_hash[:id] }
         response = self.class.http_get('addNicToVirtualMachine', params)      
@@ -285,6 +290,8 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
 
       removals = currentObject[:extra_networks] - resource[:extra_networks]
       removals.each do |removal|
+        Puppet.debug "Extra NICs - Removing: "+addition.inspect
+        
         params = { :nicid => nic_list[removal], :virtualmachineid => @property_hash[:id] }
         response = self.class.http_get('removeNicFromVirtualMachine', params)      
         self.class.wait_for_async_call(response["jobid"])      
