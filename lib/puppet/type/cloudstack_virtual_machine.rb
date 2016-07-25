@@ -90,6 +90,19 @@ Puppet::Type.newtype(:cloudstack_virtual_machine) do
 
   newproperty(:extra_networks, :array_matching => :all) do
     desc "Attach extra NICs (Array of names)"
+    defaultto [] 
+    
+    def insync?(is)
+      if is.empty? and should.empty?
+        return true
+      end
+
+      if !is.empty? and !should.empty?
+        return is == should
+      end
+      
+      return false
+    end
   end
   
   # UNUSED ?   
