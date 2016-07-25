@@ -54,11 +54,15 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
   end
   
   def self.getVirtualMachine(object)
-    default_network_name = nil  
+    default_network_name = nil
+    extra_networks = Array.new
+      
     if object["nic"] != nil
       object["nic"].each do |nic|
         if nic["isdefault"] 
           default_network_name = nic["networkname"]
+        else        
+          extra_networks.push(nic["networkname"])
         end
       end      
     end
@@ -92,8 +96,27 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       :userdata        => userdata,
       :affinitygroups  => affinityGroups,
       :state           => object["state"].downcase,
+      :extra_networks  => extra_networks,
       :ensure          => :present
     }
+  end
+  
+  def self.getNIClist(id)
+    nics = Hash.new
+    
+    params = { :listall => true, :id => id }
+    list = get_objects(:listVirtualMachines, "virtualmachine", params)
+    if list != nil
+      list.each do |object|    
+        if object["nic"] != nil
+          object["nic"].each do |nic|
+            nics[object["nic"]["network_name"]] = object["nic"]["nic_id"]
+          end
+        end         
+      end
+    end
+    
+    nics
   end
   
   # TYPE SPECIFIC    
@@ -237,6 +260,38 @@ Puppet::Type.type(:cloudstack_virtual_machine).provide :rest, :parent => Puppet:
       
       updated = true
     end
+
+    # Affinity Group
+    if resource[:extra_networks] != currentObject[:extra_networks]
+      Puppet.debug "Updating Extra Networks for VirtualMachine #{resource[:name]}"
+      
+#      if @property_hash[:state] != "stopped"
+#        if @property_flush[:ensure] == :stopped
+#          stop_virtualMachine
+#        else
+#          raise "A NIC can not be added/removed when the VM is running!"
+#        end
+#      end
+      
+      additions = resource[:extra_networks] - currentObject[:extra_networks]
+      additions.each do |addition|
+        networkid = self.class.genericLookup(:listNetworks, 'network', 'name', addition, { :listall => true }, 'id')  
+        params = { :networkid => networkid, :virtualmachineid => @property_hash[:id] }
+        response = self.class.http_get('addNicToVirtualMachine', params)      
+        self.class.wait_for_async_call(response["jobid"])     
+      end
+      
+      nic_list = self.class.getNIClist(@property_hash[:id])
+
+      removals = currentObject[:extra_networks] - resource[:extra_networks]
+      removals.each do |removal|
+        params = { :nicid => nic_list[removal], :virtualmachineid => @property_hash[:id] }
+        response = self.class.http_get('removeNicFromVirtualMachine', params)      
+        self.class.wait_for_async_call(response["jobid"])      
+      end
+            
+      updated = true
+    end    
       
     if (!updated)
       # VirtualMachine does not provide a general update function

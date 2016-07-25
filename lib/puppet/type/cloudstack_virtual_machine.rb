@@ -87,6 +87,11 @@ Puppet::Type.newtype(:cloudstack_virtual_machine) do
   newproperty(:affinitygroups, :array_matching => :all) do
     desc "The Affinity Groups (Array of names)"
   end
+
+  newproperty(:extra_networks, :array_matching => :all) do
+    desc "Attach extra NICs (Array of names)"
+    defaultto []
+  end
   
   # UNUSED ?   
     # displayname, group, haenable, hostname, project
