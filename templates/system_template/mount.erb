@@ -1,3 +1,3 @@
 #!/bin/bash
 mkdir -p <%= @mount_dir %>
-mount -t nfs <%= @hostname_nfs %>:/exports/secondary <%= @mount_dir %>
+mount -t nfs <%= @nfs_hostname %>:/exports/secondary <%= @mount_dir %>

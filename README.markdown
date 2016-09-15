@@ -23,29 +23,17 @@ Ensure NTP is installed and set up before calling cloudstack class.
 
 Modules:
 - puppetlabs/stdlib (REQUIRED)
+- echocat/nfs (Optional)
 - puppetlabs/mysql (Optional)
-- haraldsk/nfs (Optional)
-- maestrodev/wget (Optional)
-- puppetlabs/apt (Optional)
-- puppetlabs/concat (Optional)
+- puppetlabs/apt (Optional / Ubuntu)
+- maestrodev/wget (Optional / XenServer support)
+- puppetlabs/concat (Optional / CS Master)
+- stahnma/epel (Optional / Cloudmonkey / CentOS)
 
 * If you want to set up MySQL config:
   	- include 'mysql::server'	[puppetlabs/mysql]
 * If you want to set up NFS:
   	- include 'nfs::server'		[haraldsk/nfs]
-* If you need XenServer support:
-  	- include 'wget'			[maestrodev/wget]
-* If you're installing on Debian:
-	- include 'apt'				[puppetlabs/apt]
-* If you're installing the master server:
-	[puppetlabs/concat]
-* If you manage Cloudstack without installing it:
-	Package[cloudstack_mgmt_package_name] should exist
-
-Notes:
-Due to incompatibility issues on Ubuntu 14.04, I use a different version of haraldsk/nfs:
-On Github: haw-hh-ai-lab/nfs [Branch = fix_debian_service_cycle_squashed]
-
 
 ##Usage
 
@@ -124,16 +112,18 @@ Also see the examples/profile.pp file for an example on how to set up dependenci
   
   For MySQL HA, refer to MySQL documentation
 
-##Reference
-
-You should only use the 'cloudstack' class.
-
-There are many custom types available. Documentation Pending (automatic RDOC?)
-
 ##Compatibility
 
-This module has been tested with:
-- Puppet 3.7.3 - Ruby 1.9.3 - Ubuntu 14.04.1
+This module is compatible with Cloudstack 4.x
+
+This module is compatible with:
+  * Ubuntu 12.04 LTS and 14.04 LTS
+  * CentOS 6.x and 7.x
+(RHEL 6 and 7 can be easily added)
+
+This module has been tested on: 
+	- Puppet 3.7.3 (Ruby 1.9.3)
+	- Puppet 4.3.2 (Ruby 2.1.8)
 
 ##Testing
 
@@ -147,7 +137,6 @@ If you wish to test this module yourself:
 
 For running acceptance testing (beaker/vagrant):
 1. rake acceptance
-(TODO - DEPENDENCIES)
 
 ##Copyright
 

@@ -5,34 +5,39 @@ describe 'cloudstack::agent' do
   Puppet::Util::Log.newdestination(:console)
   
   context "ubuntu" do
-  	  let(:facts) { {
-	  	:osfamily 			   => 'debian',
-	  	:operatingsystem 	 => 'Ubuntu',
-	  	:lsbdistid			   => 'Ubuntu',
-	  	:lsbdistcodename 	 => 'saucy',
-	  	:concat_basedir  	 => '/tmp',
-	  } }
+    let(:facts) {
+        @ubuntu_facts
+    }
     	  
 	  context "defaults" do	  
 	    it { should compile.with_all_deps }
 
-      it { should contain_apt__source('cloudstack') }
+      it { should contain_class('cloudstack::install::repo') }
+        it { should contain_class('cloudstack::install::repo::apt') }
+          it { should contain_class('apt') }
+          it { should contain_apt__source('cloudstack').with({
+            'location' => 'http://cloudstack.apt-get.eu/ubuntu',
+            'release'  => 'trusty',
+            'repos'    => '4.9',
+          }) }
       it { should contain_package('cloudstack-agent') }
     end
   end
   
   context "centos" do
-  	let(:facts) { {
-	    :osfamily 				       => 'redhat',
-	  	:operatingsystem 		     => 'CentOS',
-	  	:operatingsystemrelease  => '6.0',
-	  	:concat_basedir  		     => '/tmp',
-  	} }
+    let(:facts) {  
+      @centos_facts
+    }
         
     context "defaults" do   
       it { should compile.with_all_deps }
 
-      it { should contain_file('/etc/yum.repos.d/cloudstack.repo') }
+      it { should contain_class('cloudstack::install::repo') }
+        it { should contain_class('cloudstack::install::repo::yum') }
+        it { should contain_yumrepo('cloudstack').with({
+          'baseurl'  => 'http://cloudstack.apt-get.eu/centos/7/4.9',
+          'gpgcheck' => true,
+        }) }
       it { should contain_package('cloudstack-agent') }
     end 
   end  

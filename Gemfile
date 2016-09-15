@@ -1,25 +1,22 @@
 source "https://rubygems.org"
 
-group :test do
-	gem "rake"
+gem "ruby_dep", "1.3.1"
+# 1.4.0 requires Ruby 2.2.5
 
-	gem "puppet", ENV['PUPPET_VERSION'] || '~> 3.7.0'
-	gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
+group :test do
+	gem "puppet", ENV['PUPPET_VERSION'] || '~> 4.3.2'
 	gem "puppetlabs_spec_helper"
-	
-	gem "r10k"
+	gem "metadata-json-lint"
+end
+
+group :integration_test do
+	gem "beaker-rspec"
+	gem "vagrant-wrapper"
 end
 
 group :development do
-	# gem "travis"
-	# gem "travis-lint"
-	
-	gem "beaker"
-	gem "beaker-rspec"
-	gem "beaker-librarian"
-	gem "vagrant-wrapper"
-	
 	gem "puppet-blacksmith"
-	
-	gem "rcov", '=0.9.11'
+	gem "guard-rake"
+	gem "travis"
+	gem "travis-lint"
 end

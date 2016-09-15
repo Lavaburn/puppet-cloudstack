@@ -1,15 +1,26 @@
 # Forge Modules
 forge "https://forgeapi.puppetlabs.com"
 
+# Required
 mod 'puppetlabs-stdlib'
-mod 'puppetlabs-apt'
-mod 'puppetlabs-mysql'
-mod 'maestrodev-wget'
-mod 'puppetlabs-concat'
-mod 'stankevich-python'
+
+# Optional / NFS
 mod 'echocat-nfs'
 
-# Community Git Modules
-#mod 'nfs',
-#  :git => "https://github.com/haw-hh-ai-lab/puppet-module-nfs.git", 
-#  :ref => "fix_debian_service_cycle_squashed"
+# Optional / MySQL
+mod 'puppetlabs-mysql'
+
+# Optional / CS / Ubuntu
+mod 'puppetlabs-apt'
+
+# Optional / CS / XenServer Support
+mod 'maestrodev-wget'
+
+# Optional / CS Master
+mod 'puppetlabs-concat'
+
+# Optional / CloudMonkey
+mod 'stankevich-python'
+
+# Optional / CloudMonkey / CentOS
+mod 'stahnma-epel'

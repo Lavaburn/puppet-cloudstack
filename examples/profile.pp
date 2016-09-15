@@ -3,24 +3,15 @@
 # This is an example of how your profile could look when using the cloudstack module
 # Choose between 3-in-1 or separate parts. Don't copy this example blindly.
 #
-# (*) It is highly recommended to put secret keys in Hiera-eyaml and use automatic parameter lookup
-# [https://github.com/TomPoulton/hiera-eyaml]
-# [https://docs.puppetlabs.com/hiera/1/puppet.html#automatic-parameter-lookup]
+# (*) It is highly recommended to put secret keys in Hiera-eyaml
 #
 class example::profile {
   # Dependencies
     # if mysql_server = true
-    include 'mysql::server'         #TODO ??  bind-address = 0.0.0.0
-                                    # TODO Really necessary?
+    include 'mysql::server'
 
     # if nfs_server = true
     include 'nfs::server'
-
-    # if cloudstack_server/cloudstack_install = true and using Ubuntu
-    include 'apt'
-
-    # if cloudstack_hypervisor_support contains xenserver
-    include 'wget'
 
 
   # Cloudstack 3-in-1
@@ -84,22 +75,16 @@ class example::profile {
 
 
   # Class Dependencies/Sequence
-  # DEPENDENCY CYCLE - Class['mysql::server'] -> Class['cloudstack']
   Class['nfs::server'] -> Class['cloudstack']
-  # DEPENDENCY CYCLE - Class['apt'] -> Class['cloudstack']
-  Class['wget'] -> Class['cloudstack']
 
 
-  # Integrate REST API - Custom Types
-  $api_auth_file = '/etc/puppet/cloudstack_api.yaml'
-
-  $api_host   = '127.0.0.1'
-  $api_port   = '8080'
-  $api_key    = 'TODO - get from webinterface'
-  $api_secret = 'TODO - get from webinterface'
-
-  file { $api_auth_file:
-    ensure  => file,
-    content => template('cloudstack/api.yaml.erb')
+  # Integrate REST API - Allow Custom Types
+  class { 'cloudstack::api':
+    api_key    => 'TODO',# get from webinterface
+    api_secret => 'TODO',# get from webinterface
   }
+
+
+  # CloudMonkey
+  contain ::cloudstack::cloudmonkey
 }

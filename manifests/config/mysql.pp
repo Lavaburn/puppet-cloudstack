@@ -1,23 +1,32 @@
 # Class: cloudstack::config::mysql
 #
-# This is a private class. Only use the 'cloudstack' class.
+# This is a private class used by the 'cloudstack::config' class.
 #
-# Sets up the MySQL Database
+# Configures the MySQL Database
 #
-class cloudstack::config::mysql inherits ::cloudstack {
+class cloudstack::config::mysql (
+  $server_count = $cloudstack::cloudstack_server_count,
+  $confd_dir    = $cloudstack::mysql_confd_dir,
+  $service_name = $cloudstack::mysql_service_name,
+) inherits cloudstack::config {
   # Validation
-  if (!is_numeric($::cloudstack::cloudstack_server_count)) {
-    fail("cloudstack_server_count should be a number. Set as ${::cloudstack::cloudstack_server_count}")
-  }
-  validate_absolute_path($::cloudstack::mysql_confd_dir)
-  validate_string($::cloudstack::mysql_service_name)
+  validate_integer($server_count)
 
-  # Template variables
-  $max_connections = $::cloudstack::cloudstack_server_count * 350
+  # Template variable
+  $max_connections = $server_count * 350
 
-  # Configuration file
-  file { "${::cloudstack::mysql_confd_dir}/cloudstack.cnf":
-    content => template('cloudstack/cloudstack.cnf.erb'),
-    notify  => Service[$::cloudstack::mysql_service_name],
+  if ($confd_dir != false) {
+    validate_absolute_path($confd_dir)
+
+    # Configuration file
+    file { "${confd_dir}/cloudstack.cnf":
+      content => template('cloudstack/cloudstack.cnf.erb'),
+    }
+
+    if ($service_name != false) {
+      validate_string($service_name)
+
+      File["${confd_dir}/cloudstack.cnf"] ~> Service[$service_name]
+    }
   }
 }

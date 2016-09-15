@@ -8,9 +8,8 @@ require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
 
-# These gems aren't always present
+# These gems aren't always present (eg. Travis --without development)
 begin
-	#On Travis with --without development
 	require 'puppet_blacksmith/rake_tasks'
 rescue LoadError
 end
@@ -56,7 +55,7 @@ task :test => [
   #:puppetfile,
 	:syntax,
   :lint,
-	:metadata,
+	:metadata_lint,
 	:spec,
 ]
 

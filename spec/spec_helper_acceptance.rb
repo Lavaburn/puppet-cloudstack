@@ -23,8 +23,8 @@ RSpec.configure do |c|
 			install_package host, 'ruby1.9.1-dev'
 			install_package host, 'ruby'
 			install_package host, 'git'
-			on host, 'gem install librarian-puppet'
-    	end
+			#on host, 'gem install librarian-puppet'
+	  end
 			
 		# Hiera
 		files = [ 'hiera.yaml', 'hiera' ]

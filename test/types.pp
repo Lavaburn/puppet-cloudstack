@@ -11,6 +11,7 @@
 #  affinitygroups  => ['affinity1', 'affinity2']
 #}
 
+# lint:ignore:140chars
 #cloudstack_ssh_keypair { 'KEY1':
 #  ensure    => 'absent',
 #}
@@ -32,6 +33,7 @@
 #  account   => 'JUBANOC',
 #  domain    => 'RCS',
 #}
+# lint:endignore
 
 #cloudstack_public_ip { 'RCS Services':
 #  ensure  => 'absent',

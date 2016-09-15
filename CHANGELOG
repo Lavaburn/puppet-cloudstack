@@ -27,4 +27,10 @@
  - Setup Cloudstack with Authentication, Infrastructure settings, Provision ISOs, Offerings, Virtual Machines, ...
    MISSING: projects, regions, templates, and some more advanced networking (VPC, ACL, Security Group, Load Balancer) 
  
- 
+ ## 2016-09-15 Release 1.0.0
+ ### Summary:
+   Major rewrite:
+   * Usage Server is now included in the main class
+   * Agent and Server now use the same logic for setting up the repository
+   * Supports Cloudstack up to 4.9 now
+   

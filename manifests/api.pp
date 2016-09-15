@@ -28,8 +28,6 @@ class cloudstack::api (
   $api_host = $host
   $api_port = $port
 
-  Class['cloudstack']
-  ->
   file { $api_auth_file:
     ensure  => 'file',
     content => template('cloudstack/api.yaml.erb')
@@ -37,8 +35,8 @@ class cloudstack::api (
 
   # Dependency Gems Installation
   if versioncmp($::puppetversion, '4.0.0') < 0 {
-    ensure_packages(['rest-client'], {'ensure' => 'present', 'provider' => 'gem'})
+    ensure_packages(['rest-client', 'json'], {'ensure' => 'present', 'provider' => 'gem'})
   } else {
-    ensure_packages(['rest-client'], {'ensure' => 'present', 'provider' => 'puppet_gem'})
+    ensure_packages(['rest-client', 'json'], {'ensure' => 'present', 'provider' => 'puppet_gem'})
   }
 }

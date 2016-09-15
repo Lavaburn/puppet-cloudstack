@@ -1,51 +1,41 @@
 # Class: cloudstack::config::cloudstack::mysql
 #
-# This is a private class. Only use the 'cloudstack' class.
+# This is a private class used by the 'cloudstack::config::cloudstack' class.
 #
 # This class sets up the MySQL database for the first time
 #
-class cloudstack::config::cloudstack::mysql inherits ::cloudstack {
+class cloudstack::config::cloudstack::mysql (
+  $setup_db_bin = $cloudstack::cloudstack_setup_db_bin,
+
+  $is_master = $cloudstack::cloudstack_master,
+
+  $cloudstack_hostname = $cloudstack::hostname_cloudstack,
+  $db_hostname         = $cloudstack::hostname_database,
+
+  $db_username     = $cloudstack::database_username,
+  $db_password     = $cloudstack::database_password,
+  $db_server_key   = $cloudstack::database_server_key,
+  $db_database_key = $cloudstack::database_database_key,
+) inherits cloudstack::config::cloudstack {
   # Validation
-  validate_bool($::cloudstack::cloudstack_master)
-  validate_string($::cloudstack::hostname_database, $::cloudstack::hostname_cloudstack)
-  validate_string($::cloudstack::database_server_key, $::cloudstack::database_database_key)
-  validate_string($::cloudstack::database_username, $::cloudstack::database_password)
-  validate_string($::cloudstack::cloudstack_mgmt_package_name)
+  validate_absolute_path($setup_db_bin)
+  validate_bool($is_master)
+  validate_string($db_hostname, $cloudstack_hostname)
+  validate_string($db_username, $db_password)
+  validate_string($db_server_key, $db_database_key)
 
-  $bin = '/usr/bin/cloudstack-setup-databases'
-  $db = "${::cloudstack::database_username}:${::cloudstack::database_password}@${::cloudstack::hostname_database}"
-  $security = "-m ${::cloudstack::database_server_key} -k ${::cloudstack::database_database_key} -i ${::cloudstack::hostname_cloudstack}"
-
-  if ($::cloudstack::cloudstack_master) {
+  # Command Parameters
+  $db = "${db_username}:${db_password}@${db_hostname}"
+  $security = "-m ${db_server_key} -k ${db_database_key} -i ${cloudstack_hostname}"
+  if ($is_master) {
     $deploy = '--deploy-as=root'
   } else {
     $deploy = ''
   }
 
-  # TODO [FEATURE-REQUEST: Install from Source?]
-  # => Can't depend on Package['cloudstack-management']
-
-
-  # TODO VERSION SPECIFIC - Currently a bug in cloudstack (4.4?) package..
-  $setup_dir = '/usr/share/cloudstack-management/setup'
-  $patch_name = 'cloudstack-schema-premium.patch'
-
-  file { "${setup_dir}/${patch_name}":
-    ensure => 'file',
-    source => "puppet:///modules/cloudstack/${patch_name}",
-  }
-
-  exec { 'patch-cloudstack-schema-premium':
-    command     => "/usr/bin/patch -p1 ${setup_dir}/create-schema-premium.sql < ${setup_dir}/${patch_name}",
-    cwd         => $setup_dir,
-    subscribe   => Package[$::cloudstack::cloudstack_mgmt_package_name],
-    refreshonly => true,
-    require     => File["${setup_dir}/${patch_name}"],
-  }
-
+  # Execute Database Initialisation if DB 'cloud' does not exist
   exec { 'Setup Cloudstack with MySQL database':
-    command => "${bin} ${db} ${security} ${deploy}",
-    require => Exec['patch-cloudstack-schema-premium'],
-    unless  => "/usr/bin/mysql -h${::cloudstack::hostname_database} -u${::cloudstack::database_username} -p${::cloudstack::database_password} cloud",
-  }
+    command => "${setup_db_bin} ${db} ${security} ${deploy}",
+    unless  => "/usr/bin/mysql -h${db_hostname} -u${db_username} -p${db_password} cloud",
+  } ~> Anchor['cloudstack_first_time_config_step_1']
 }
