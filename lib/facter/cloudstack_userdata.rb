@@ -58,7 +58,7 @@ dirs.each do |lease_dir|
             virtual_router = `#{cmd}`
             virtual_router.strip!
             
-            cmd = sprintf('wget -q -O - http://%s/latest/user-data', virtual_router)
+            cmd = sprintf('wget -q -t3 -T2 -O - http://%s/latest/user-data', virtual_router)
             result = `#{cmd}`
             
             lines = result.split("\n")
@@ -76,7 +76,7 @@ dirs.each do |lease_dir|
             # use the older method of http://virtual_router_ip/latest/{metadata-type}
             # because the newer http://virtual_router_ip/latest/meta-data/{metadata-type}
             # was 404'ing on CloudStack v2.2.12 
-            cmd = sprintf('wget -q -O - http://%s/latest/instance-id', virtual_router)
+            cmd = sprintf('wget -q -t3 -T2 -O - http://%s/latest/instance-id', virtual_router)
             result = `#{cmd}`
 
             Facter.add('cloudstack_instance_id') do
